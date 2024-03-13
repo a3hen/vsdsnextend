@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
-from control_cmd import NetworkManager, Package
-from log_record import Logger
+from .control_cmd import NetworkManager, Package
+from .log_record import Logger
 
 def Singleton(cls):
     instance = {}

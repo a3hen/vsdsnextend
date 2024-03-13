@@ -6,8 +6,8 @@ import sys
 import tarfile
 import time
 from prettytable import PrettyTable
-from base import Base
-from base import Logger
+from .base import Base
+from .base import Logger
 
 current_dir = os.path.dirname(os.path.realpath(sys.argv[0]))
 

@@ -53,8 +53,29 @@ def create_node(node_name,node_ip):
 
 
 def adjusting_linstordb():
-    pass
+    node_info = subprocess.run(["linstor", "n", "l"], capture_output=True, text=True)
+    if node_info.returncode != 0:
+        print("命令 linstor n l 执行失败，错误信息如下：")
+        print(node_info.stderr)
 
 
 def adjusting_pvc():
+    pass
+def _count_nodes(info):
+    lines = info.split('\n')
+    node_count = 0
+    for line in lines:
+        if '┊' in line and 'Node' not in line:
+            node_count += 1
+    return node_count
+
+def _count_linstordb(info):
+    lines = info.split('\n')
+    node_count = 0
+    for line in lines:
+        if '┊' in line and 'Node' not in line:
+            node_count += 1
+    return node_count
+
+if __name__ == "__main__":
     pass

@@ -1,4 +1,4 @@
-#vsdsinstaller-k;替换内核
+#vsdsinstaller-k;替换内核,安装VersaSDS
 config:
   architecture: ppc64le
   kernel: 5.4.0-131-generic
@@ -6,3 +6,53 @@ config:
   VersaSDS-DEB: versasds1_1.1_ppc64el.deb
 #vsdsipconfig;安装和配置network manager
 nmcli:
+#vsdssshfree;配置免密
+sshfree_node:
+  - name:
+    ip:
+    username:
+    password:
+  - name:
+    ip:
+    username:
+    password:
+  - name:
+    ip:
+    username:
+    password:
+#vsdsinstaller-u;安装pacemaker等
+packages:
+  pacemaker:
+  corosync:
+  crmsh:
+  packmaker-resource-agents:
+  resource-agents:
+targetcli:
+  targetcli:
+#vsdadm;
+controller_ip: 192.192.192.192
+passphrase: abcdef
+local_node_name: master
+local_node_ip: 10.10.10.10
+#vsdscoroconf:
+coroconf_cluster:
+bindnetaddr:
+coroconf_node:
+  - name:
+    id:
+    heartbeat_line:
+      - ip:
+  - name:
+    id:
+    heartbeat_line:
+      - ip:
+  - name:
+    id:
+    heartbeat_line:
+      - ip:
+#vsdshaconf
+haconf_cluster:
+linstor_dir:
+DRBD_total_number:
+ip:
+
