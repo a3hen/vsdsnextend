@@ -1,8 +1,8 @@
 #! /usr/bin/env python3
 import argparse
 import sys
-from log_record import Logger
-from control import Control, display_version
+from .log_record import Logger
+from .control import Control, display_version
 
 def main():
     parser = argparse.ArgumentParser(description='vsdscsipconf')
@@ -15,7 +15,7 @@ def main():
     if args.version:
         display_version()
         sys.exit()
-    
+
     control = Control(logger)
     control.all_control()
 

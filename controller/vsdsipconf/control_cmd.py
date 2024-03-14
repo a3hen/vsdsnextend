@@ -6,7 +6,7 @@ import textwrap
 import time
 import yaml
 
-from .base import Base
+from base import Base
 
 class NetworkManager:
     def __init__(self, logger):
@@ -97,6 +97,7 @@ class NetworkManager:
             self.logger.log(f"ERROR - 应用 Netplan 配置失败：{e}")
             return False
 
+
 class Package:
     def __init__(self, logger):
         self.base = Base(logger)
@@ -146,7 +147,7 @@ class Package:
         
         software_name = "network-manager"
         
-        if "No such file" in result.stdout or "not found" in result.stdout or "Warning" in result.stdout:
+        if "No such file" in result.stdout or "not found" in result.stdout:
             self.logger.log(f"安装 nmcli 失败")
             print(f"安装 nmcli 失败")
             sys.exit()

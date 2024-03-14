@@ -1,6 +1,5 @@
 #! /usr/bin/env python3
 from .control_cmd import NetworkManager, Package
-from .log_record import Logger
 
 def Singleton(cls):
     instance = {}
@@ -13,18 +12,14 @@ def Singleton(cls):
     return _singleton_wrapper
 
 def display_version():
-    print("version: v1.0.1")
+    print("version: v1.0.2")
 
 @Singleton
 class Control:
-    def __init__(self, logger=None):
-        self.init_logger()
+    def __init__(self, logger):
         self.network_manager = NetworkManager(logger)
         self.package = Package(logger)
         self.print_ = []
-
-    def init_logger(self):
-        self.logger = Logger("vsdscsipconf")
             
     # nmcli安装
     def nmcli_(self):
@@ -45,7 +40,13 @@ class Control:
             print("配置网络管理成功")
 
         print("done")
+    
+    # 最后进行一次重启 network_manager
+    def restart_network_manager(self):
+        if not self.network_manager.restart_network_manager_service():
+            print(f"重启NetworkManager服务失败")
 
     def all_control(self):
         self.nmcli_()
         self.setup_network_manager()
+        self.restart_network_manager()

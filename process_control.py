@@ -95,7 +95,7 @@ class Control:
             return None
 
     def replacement_kernel_check(self):
-        user_input = input("是否按照要求替换好内核 (y/n)，按其他键退出程序").lower()
+        user_input = input("是否按照要求替换好内核 (y/n)，按其他键退出程序: ").lower()
         if user_input == 'y':
             print("已替换好内核，即将安装软件")
         elif user_input.lower() == 'n':
@@ -106,11 +106,9 @@ class Control:
 
     def vsdsipconf(self):
         print("安装网络配置工具，若已安装可跳过")
-        user_input = input("是否已填写配置文件 (y/n)，按其他键跳过安装网络配置").lower()
+        user_input = input("是否已填写配置文件 (y/n)，按其他键跳过安装网络配置: ").lower()
         if user_input == 'y':
-            print("执行'y'的操作")
-            obj = vsdsipconf.control.Control()
-            obj.all_control()
+            subprocess.run(['python', '-m', 'controller.vsdsipconf.main'], check=True)
         elif user_input.lower() == 'n':
             print("执行'n'的操作")
             print("请先填写配置文件")
@@ -122,7 +120,7 @@ class Control:
 
     def vsdsiptool(self):
         print("ip 配置，若已配置 ip 可跳过")
-        user_input = input("是否跳过 ip 配置 (y/n)，按其他键跳过 ip 配置").lower()
+        user_input = input("是否跳过 ip 配置 (y/n)，按其他键跳过 ip 配置: ").lower()
         if user_input == 'y':
             print("退出 ip 配置")
             print("程序继续执行")
@@ -160,7 +158,7 @@ class Control:
 
     def vsdssshfree(self):
         print("进行 ssh 免密配置，如已配置可跳过")
-        user_input = input("是否已填写配置文件 (y/n)，按其他键跳过 ssh 免密配置").lower()
+        user_input = input("是否已填写配置文件 (y/n)，按其他键跳过 ssh 免密配置: ").lower()
         if user_input == "y":
             pass
         elif user_input == "n":
@@ -173,7 +171,7 @@ class Control:
     # 执行vsdsinstaller-k -i，安装 DRBD/LINSTOR
     def vsdsinstaller_k(self):
         print("安装DRBD/LINSTOR，若已安装可跳过")
-        user_input = input("是否已填写配置文件 (y/n)，按其他键跳过 DRBD/LINSTOR 安装").lower()
+        user_input = input("是否已填写配置文件 (y/n)，按其他键跳过 DRBD/LINSTOR 安装: ").lower()
         if user_input == "y":
             pass
         elif user_input == "n":
@@ -187,7 +185,7 @@ class Control:
     # 执行vsdsinstaller-u，安装 VersaSDS - Pacemaker/Corosync/crmsh  + targetcli
     def vsdsinstaller_u(self):
         print("安装高可用软件，若已安装可跳过")
-        user_input = input("是否已填写配置文件 (y/n)，按其他键跳过高可用软件安装").lower()
+        user_input = input("是否已填写配置文件 (y/n)，按其他键跳过高可用软件安装: ").lower()
         if user_input == "y":
             pass
         elif user_input == "n":
@@ -201,7 +199,7 @@ class Control:
     # 执行vsdspreset，VersaSDS 预配置
     def vsdspreset(self):
         print("VersaSDS 预配置，若已配置可跳过")
-        user_input = input("是否进行 VersaSDS 预配置 (y/n)，按其他键跳过 VersaSDS 预配置").lower()
+        user_input = input("是否进行 VersaSDS 预配置 (y/n)，按其他键跳过 VersaSDS 预配置: ").lower()
         if user_input == "y":
             pass
         elif user_input == "n":
@@ -214,9 +212,10 @@ class Control:
     # 执行vsdsadm，配置 LVM 和 LINSTOR 集群
     def vsdsadm(self):
         # 检查config_list中的特定值是否为None
-        if self.config_list['controller_ip'] is None or self.config_list['passphrase'] is None or self.config_list[
-            'local_node_name'] is None or self.config_list[
-            'local_node_ip'] is None:
+        if (self.config_list['controller_ip'] is None or
+                self.config_list['passphrase'] is None or
+                self.config_list['local_node_name'] is None or
+                self.config_list['local_node_ip'] is None):
             print("警告：'controller_ip'、'passphrase'、'local_node_name'或'local_node_ip'未配置，请检查config.yaml文件的填写。")
             return
         print("配置 LVM 和 LINSTOR 集群，如已配置可以跳过")
@@ -247,7 +246,7 @@ class Control:
 
     def vsdscoroconf(self):
         print("配置 Corosync，如已配置可以跳过")
-        user_input = input("是否已填写配置文件 (y/n)，按其他键跳过 Corosync 配置 ").lower()
+        user_input = input("是否已填写配置文件 (y/n)，按其他键跳过 Corosync 配置: ").lower()
         if user_input == "y":
             pass
         elif user_input == "n":
@@ -260,7 +259,7 @@ class Control:
 
     def vsdshaconf(self):
         print("配置高可用，如已配置可以跳过")
-        user_input = input("是否已填写配置文件 (y/n)，按其他键跳过高可用配置 ").lower()
+        user_input = input("是否已填写配置文件 (y/n)，按其他键跳过高可用配置: ").lower()
         if user_input == "y":
             pass
         elif user_input == "n":
@@ -273,7 +272,7 @@ class Control:
 
     def csmpreinstaller(self):
         print("安装 docker & kubeadm 等软件")
-        user_input = input("是否执行安装 (y/n)，按其他键跳过安装 docker & kubeadm ").lower()
+        user_input = input("是否执行安装 (y/n)，按其他键跳过安装 docker & kubeadm: ").lower()
         if user_input == "y":
             pass
         elif user_input == "n":
