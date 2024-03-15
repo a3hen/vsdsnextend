@@ -7,44 +7,37 @@ import tarfile
 import time
 from prettytable import PrettyTable
 from .base import Base
-from .base import Logger
 
 current_dir = os.path.dirname(os.path.realpath(sys.argv[0]))
 
-
 class ReplacementInstallation:
-    def __init__(self, logger=None):
+    def __init__(self, logger):
         self.base = Base()
         self.logger = logger
         self.config = None
-        self.init_logger()
-
-    def init_logger(self):
-        self.logger = Logger("vsdsinstaller-k")
-
+    
     def install_from_yaml(self):
         yaml_filename = "vsdsinstaller-k_config.yaml"
-
+        
         yaml_path = os.path.join(current_dir, yaml_filename)
         # print(f"yaml的路径：{yaml_path}")
         try:
             if not os.path.isfile(yaml_path):
-                raise FileNotFoundError(
-                    f"未找到 {yaml_filename} 文件\n请检查配置文件是否在当前路径或者配置文件名称是否为config.yaml")
+                raise FileNotFoundError(f"未找到 {yaml_filename} 文件\n请检查配置文件是否在当前路径或者配置文件名称是否为config.yaml")
             self.config = self.base.get_version_from_yaml("config", yaml_path)
             return self.config
         except FileNotFoundError as e:
-            print(e)
+            print(e)  
             sys.exit()
 
     # 获取解压后的文件夹名字
     def get_extracted_folder(self, kernel_package_name):
-
+        
         folder_name = None
         with tarfile.open(kernel_package_name, 'r') as tar:
             folder_name = os.path.commonprefix(tar.getnames())
         return folder_name
-
+    
     # 检查 copymods
     def check_copymods(self):
         try:
@@ -63,8 +56,8 @@ class ReplacementInstallation:
         if not self.config:
             self.config = self.install_from_yaml()
 
-        expected_architecture = self.config.get('architecture').strip()  # 预期架构
-        expected_kernel_version = self.config.get('kernel').strip()  # 预期内核版本
+        expected_architecture = self.config.get('architecture').strip() # 预期架构
+        expected_kernel_version = self.config.get('kernel').strip() # 预期内核版本
 
         # 检查当前系统处理器架构和内核版本
         current_architecture = self.base.com("uname -p").stdout.strip()
@@ -76,11 +69,11 @@ class ReplacementInstallation:
             return
         else:
             print(f"当前系统架构为：{current_architecture}，符合预期架构。")
-
+                  
         # 检查当前内核版本是否符合预期版本
-        if current_kernel_version not in expected_kernel_version:  # 不符合 继续后续步骤
+        if current_kernel_version not in expected_kernel_version: # 不符合 继续后续步骤
             print(f"当前内核版本为：{current_kernel_version}，不符合预期版本，准备更新内核")
-
+            
             print("执行检查 copymods 方法")
             self.check_copymods()
 
@@ -92,9 +85,9 @@ class ReplacementInstallation:
                     raise FileNotFoundError(f"在当前路径下找不到 {kernel_package_name} 包")
             except FileNotFoundError as e:
                 print(e)
-                sys.exit()
+                sys.exit() 
 
-                # 解压内核安装包
+            # 解压内核安装包
             command = f"sudo tar -xzvf {kernel_package_name}"
             print("解压内核安装包中")
             result = self.base.com(command)
@@ -106,7 +99,7 @@ class ReplacementInstallation:
                 extracted_folder = self.get_extracted_folder(tar_path)
                 tar_path = os.path.join(current_dir, extracted_folder)  ###########
                 # print(f"{tar_path}")
-
+                
                 # 拷贝内核文件及内核模块
                 command_a = f"sudo cp {tar_path}/boot/* /boot/"
                 result = self.base.com(command_a)
@@ -132,7 +125,7 @@ class ReplacementInstallation:
                     command_ls = f"ls /boot | grep initrd.img-{expected_kernel_version}"
                     result = self.base.com(command_ls)
                     # self.logger.log(f"执行指令：{command_ls}. \n执行结果：{result.stdout}")
-                    if result.stdout.strip():
+                    if result.stdout.strip(): 
                         print("检查 initrd.img 文件存在")
                     else:
                         print("检查 initrd.img 文件不存在。重新尝试生成 initramfs 映像")
@@ -141,20 +134,20 @@ class ReplacementInstallation:
                         # self.logger.log(f"再次执行指令：{command_create}. \n执行结果：{result.stdout}")
                         result = self.base.com(command_ls)
                         # self.logger.log(f"再次执行指令：{command_ls}. \n执行结果：{result.stdout}")
-                        if result.stdout.strip():
+                        if result.stdout.strip(): 
                             print("检查 initrd.img 文件存在")
                         else:
                             print("检查 initrd.img 文件不存在，程序终止")
                             sys.exit()
                 else:
-                    print("生成 initramfs 映像失败")
-                    self.logger.log(f"生成 initramfs 映像失败")
-                    sys.exit()
+                    print("生成 initramfs 映像失败")  
+                    self.logger.log(f"生成 initramfs 映像失败")    
+                    sys.exit()  
 
-                    # 更新 grub
+                # 更新 grub
                 command = f"sudo update-grub"
                 result = self.base.com(command)
-                if "done" not in result.stdout:
+                if "done" not in result.stdout: 
                     print("更新 grub 失败，程序终止")
                     sys.exit()
                 else:
@@ -168,7 +161,7 @@ class ReplacementInstallation:
         if not self.config:
             self.config = self.install_from_yaml()
 
-        expected_kernel_version = self.config.get('kernel').strip()  # 预期内核版本
+        expected_kernel_version = self.config.get('kernel').strip() # 预期内核版本
         # 检查当前系统处理器架构和内核版本
         current_kernel_version = self.base.com("uname -r").stdout.strip()
         # self.logger.log(f"执行指令：'uname -r'. \n执行结果：{current_kernel_version}")
@@ -183,14 +176,13 @@ class ReplacementInstallation:
         if not self.config:
             self.config = self.install_from_yaml()
 
-        VersaSDS_DEB = self.config.get('VersaSDS-DEB').strip()  # 预期内核版本
-
+        VersaSDS_DEB = self.config.get('VersaSDS-DEB').strip() # 预期内核版本
+        
         # 检查 DEB 包是否存在于当前路
         deb_package_path = os.path.join(current_dir, VersaSDS_DEB)
         try:
             if not os.path.exists(deb_package_path):
-                raise FileNotFoundError(
-                    f"在当前路径下找不到 {VersaSDS_DEB} 包\n请检查安装包是否在当前路径或者安装包名称是否与配置文件一致。")
+                raise FileNotFoundError(f"在当前路径下找不到 {VersaSDS_DEB} 包\n请检查安装包是否在当前路径或者安装包名称是否与配置文件一致。")
         except FileNotFoundError as e:
             print(e)
             sys.exit()
@@ -214,17 +206,17 @@ class ReplacementInstallation:
         command = f"sudo dpkg -i {VersaSDS_DEB}"
         print("开始安装VersaSDS")
         result = self.base.com(command)
-
+        
         # 检查安装
         command = f"dpkg -l | grep ^ii | grep versasds"
         result = self.base.com(command)
-        if not result.stdout.strip():
+        if not result.stdout.strip(): 
             print("versasds 安装失败！")
             sys.exit()
-
+        
         command = f"linstor --version"
         result = self.base.com(command)
-        if "not" in result.stdout:
+        if "not" in result.stdout: 
             print("linstor 安装失败！")
             sys.exit()
 
@@ -336,3 +328,7 @@ class ReplacementInstallation:
 
         print(table)
         self.logger.log(f"显示版本：\n{table}")
+
+
+
+

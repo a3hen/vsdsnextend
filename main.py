@@ -1,12 +1,5 @@
 import argparse
-import controller
-
-
-# ----以下是一级命令行----
-# python3 main.py
-# python3 main.py create(c)
-# # 创建密码
-
+import process_control
 
 
 class argparse_operator:
@@ -23,26 +16,16 @@ class argparse_operator:
                                  help='Show current version',
                                  action='store_true')
 
-        parser_kernel = sub_parser.add_parser("kernel",aliases=['k'],help='create passphrase')
-
-
         self.parser.set_defaults(func=self.main_usage)
-        parser_kernel.set_defaults(func=self.kernel_operation)
 
-
-    def perform_all_tests(self,args):
+    def perform_all_tests(self, args):
         self.parser.print_help()
 
-    def main_usage(self,args):
+    def main_usage(self, args):
         if args.version:
             print(f'Version: v1.0.0')
         else:
             print(f"python3 main.py")
-
-    def kernel_operation(self,args):
-        print("替换内核")
-        obj = controller.vsdsinstaller_k.replacement_installation.ReplacementInstallation()
-        obj.change_kernel()
 
     def parser_init(self):
         args = self.parser.parse_args()
@@ -52,4 +35,3 @@ class argparse_operator:
 if __name__ == "__main__":
     cmd = argparse_operator()
     cmd.parser_init()
-

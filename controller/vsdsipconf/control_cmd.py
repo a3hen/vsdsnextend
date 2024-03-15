@@ -6,7 +6,7 @@ import textwrap
 import time
 import yaml
 
-from base import Base
+from .base import Base
 
 class NetworkManager:
     def __init__(self, logger):
