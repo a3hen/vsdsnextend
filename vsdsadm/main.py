@@ -97,6 +97,9 @@ def create_pv_vg_tp_sp(device, node_name):
 def adjusting_linstordb():
     node_dict = _count_nodes()
     linstordb_list = _count_linstordb()
+    if len(linstordb_list) >= 3:
+        print("已有3个或以上的linstordb资源，无需调整。")
+        return
     nodes = list(node_dict.keys())
     if len(nodes) >= 3:
         if len(linstordb_list) < 3:
@@ -148,6 +151,9 @@ def adjusting_pvc():
                         print(f"命令 linstor r c {name} {pvc_name} --storage-pool {sp} 执行失败，错误信息如下：")
                         print(create_res.stderr)
                         sys.exit()
+            else:
+                print(f"资源 {pvc_name} 已有3个或以上的副本，无需调整。")
+                return
         else:
             if len(nodes) != len(pvc_dict[pvc_name]):
                 difference = [item for item in nodes if item not in pvc_dict[pvc_name]]
