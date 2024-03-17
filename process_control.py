@@ -223,9 +223,9 @@ class Control:
         if user_input == "y":
             try:
                 # subprocess.run(['python3', '-m', 'controller.vsdsinstaller_u.main', '-u'], check=True)
-                subprocess.run(['./vsdsinstaller-u-v1.0.2/vsdsinstaller-u', '-u'], check=True)
+                subprocess.run(['./vsdsinstaller-u-v1.0.2/vsdsinstaller-u'], check=True)
             except subprocess.CalledProcessError as e:
-                print(f"vsdsinstaller_u -i 失败: {e}")
+                print(f"vsdsinstaller_u 失败: {e}")
                 sys.exit()
         elif user_input == "n":
             print("请先填写配置文件")
@@ -288,7 +288,11 @@ class Control:
         print("配置 Corosync，如已配置可以跳过")
         user_input = input("是否已填写配置文件 (y/n)，按其他键跳过 Corosync 配置: ").lower()
         if user_input == "y":
-            pass
+            try:
+                subprocess.run(['./vsdscoroconf-v1.0.1/vsdscoroconf'], check=True)
+            except subprocess.CalledProcessError as e:
+                print(f"vsdscoroconf 失败: {e}")
+                sys.exit()
         elif user_input == "n":
             print("请先填写配置文件")
             print("退出程序")
