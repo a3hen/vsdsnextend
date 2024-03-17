@@ -174,7 +174,7 @@ class Control:
         if user_input == "y":
             try:
                 # subprocess.run(['python3', '-m', 'controller.vsdssshfree.main', '-m'], check=True)
-                subprocess.run(['./vsdssshfree-v1.0.0/vsdssshfree', '-m'], check=True)
+                subprocess.run(['./vsdssshfree-v1.0.0/vsdssshfree', 'm'], check=True)
             except subprocess.CalledProcessError as e:
                 print(f"sshfree -m 失败: {e}")
                 sys.exit()
