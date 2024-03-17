@@ -92,6 +92,7 @@ def create_pv_vg_tp_sp(device, node_name):
         print(f"命令linstor sp c lvmthin {node_name} thpool0 vg0/tp0执行失败，错误信息如下：")
         print(create_sp.stderr)
         sys.exit()
+    print("pv、vg、thinpool、存储池创建完成")
 
 
 def adjusting_linstordb():
@@ -130,6 +131,7 @@ def adjusting_linstordb():
                     print(f"命令 linstor r c {i} linstordb --storage-pool {node_dict[i][0]} 执行失败，错误信息如下：")
                     print(create_res.stderr)
                     sys.exit()
+    print("linstordb资源调整完成")
 
 
 def adjusting_pvc():
@@ -171,6 +173,7 @@ def adjusting_pvc():
                         print(f"命令 linstor r c {i} {pvc_name} --storage-pool {node_dict[i][0]} 执行失败，错误信息如下：")
                         print(create_res.stderr)
                         sys.exit()
+    print("'pvc-'资源调整完成")
 
 
 def _count_nodes():
