@@ -150,7 +150,7 @@ def adjusting_pvc():
                 for i in range(3 - len(pvc_dict[pvc_name])):
                     name = keys[i]
                     sp = d_node_dict[name][0]
-                    create_res = subprocess.run(["linstor" "r" "c", name, pvc_name, "--storage-pool", sp],
+                    create_res = subprocess.run(["linstor", "r", "c", name, pvc_name, "--storage-pool", sp],
                                                 capture_output=True, text=True)
                     log_data = f"'localhost' - 'linstor r c {name} linstordb --storage-pool {sp}' - {create_res.stdout}"
                     Log().logger.info(log_data)
@@ -165,7 +165,7 @@ def adjusting_pvc():
             if len(nodes) != len(pvc_dict[pvc_name]):
                 difference = [item for item in nodes if item not in pvc_dict[pvc_name]]
                 for i in difference:
-                    create_res = subprocess.run(["linstor" "r" "c", i, pvc_name, "--storage-pool", node_dict[i][0]],
+                    create_res = subprocess.run(["linstor", "r", "c", i, pvc_name, "--storage-pool", node_dict[i][0]],
                                                 capture_output=True, text=True)
                     log_data = f"'localhost' - 'linstor r c {i} linstordb --storage-pool {node_dict[i][0]}' - {create_res.stdout}"
                     Log().logger.info(log_data)
