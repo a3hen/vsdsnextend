@@ -25,7 +25,7 @@ class argparse_operator:
         if args.version:
             print(f'Version: v1.0.0')
         else:
-            print(f"python3 main.py")
+            obj = process_control.Control()
 
     def parser_init(self):
         args = self.parser.parse_args()

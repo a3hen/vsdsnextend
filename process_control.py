@@ -257,20 +257,22 @@ class Control:
     def vsdsadm(self):
         print("配置 LVM 和 LINSTOR 集群，如已配置可以跳过")
         user_input = input("是否配置 LVM 和 LINSTOR 集群 (y/n)，按其他键跳过配置 LVM 和 LINSTOR 集群").lower()
+        controller_ip_input = input("请输入controller ip: ")
+        passphrase_input = input("请输入集群密码: ")
+        nodename_input = input("请输入本节点的节点名: ")
+        nodeip_input = input("请输入本节点的ip: ")
+        device_input = input("请输入用于创建存储池的硬盘: ")
         if user_input == "y":
-            config_list = vsdsadm.main.init_config(path="controller/vsdsadm/vsdsadm_config.yaml")
             # 配置linstor-client.conf
-            vsdsadm.main.create_or_update_linstor_conf(controller_ip=config_list['controller_ip'])
+            vsdsadm.main.create_or_update_linstor_conf(controller_ip=controller_ip_input)
             # 配置linstor.toml
-            vsdsadm.main.append_fixed_content_to_file(password=config_list['passphrase'])
+            vsdsadm.main.append_fixed_content_to_file(password=passphrase_input)
             # 开启satellite
             vsdsadm.main.start_satellite()
             # 创建新节点
-            vsdsadm.main.create_node(node_name=config_list[
-            'local_node_name'], node_ip=config_list[
-            'local_node_ip'])
+            vsdsadm.main.create_node(node_name=nodename_input, node_ip=nodeip_input)
             # 创建lvm、存储池
-            vsdsadm.main.create_pv_vg_tp_sp(device=config_list['device'],node_name=['local_node_name'])
+            vsdsadm.main.create_pv_vg_tp_sp(device=device_input,node_name=nodename_input)
             # 调整 linstordb 副本
             vsdsadm.main.adjusting_linstordb()
             # 调整 PVC 副本

@@ -2,29 +2,7 @@ import os
 import sys
 import re
 import subprocess
-import yaml
 import logging
-
-
-def init_config(path="vsdsadm_config.yaml"):
-    try:
-        with open(path, 'r') as file:
-            config = yaml.safe_load(file)
-        print("配置文件已成功加载")
-        if (config['controller_ip'] is None or
-                config['passphrase'] is None or
-                config['local_node_name'] is None or
-                config['device'] is None or
-                config['local_node_ip'] is None):
-            print(
-                "警告：'controller_ip'、'passphrase'、'local_node_name'、’device‘或'local_node_ip'未配置，请检查config.yaml文件的填写。")
-            sys.exit()
-        return config
-    except FileNotFoundError:
-        print(f"文件{config.yaml}未找到")
-    except yaml.YAMLError as e:
-        print(f"解析YAML文件时出错: {e}")
-
 
 def start_satellite():
     try:
