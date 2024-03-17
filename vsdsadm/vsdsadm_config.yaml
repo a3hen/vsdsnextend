@@ -1,5 +1,0 @@
-controller_ip: 192.192.192.192
-passphrase: abcdef
-local_node_name: master
-local_node_ip: 10.10.10.10
-device: /dev/sdc
