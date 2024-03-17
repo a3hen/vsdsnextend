@@ -1,7 +1,7 @@
 import sys
 import os
 import subprocess
-from controller import vsdsadm
+import vsdsadm
 
 
 
@@ -36,7 +36,7 @@ class Control:
         print("* * * * * * * * * * * * * * * *")
         user_input = input("请输入操作: ").lower()
         if user_input == '0':
-            pass
+            self.replacement_kernel()
         elif user_input == '1':
             self.replacement_kernel_check()
             self.vsdsipconf()
@@ -89,7 +89,8 @@ class Control:
         user_input = input("是否开始替换内核 (y/n)，按其他键退出程序: ").lower()
         if user_input == 'y':
             try:
-                subprocess.run(['python', '-m', 'controller.vsdsinstaller_k.main', '-r'], check=True)
+                # subprocess.run(['python3', '-m', 'controller.vsdsinstaller_k.main', '-r'], check=True)
+                subprocess.run(['./vsdsinstaller-k-v1.0.2/vsdsinstaller-k', '-r'], check=True)
             except subprocess.CalledProcessError as e:
                 print(f"vsdsinstaller_k -r 失败: {e}")
                 sys.exit()
@@ -106,7 +107,8 @@ class Control:
         user_input = input("是否已填写配置文件 (y/n)，按其他键跳过安装网络配置: ").lower()
         if user_input == 'y':
             try:
-                subprocess.run(['python', '-m', 'controller.vsdsipconf.main'], check=True)
+                # subprocess.run(['python3', '-m', 'controller.vsdsipconf.main'], check=True)
+                subprocess.run(['./vsdsipconf-v1.0.2/vsdsipconf'], check=True)
             except subprocess.CalledProcessError as e:
                 print(f"安装网络配置工具失败: {e}")
                 sys.exit()
@@ -141,7 +143,8 @@ class Control:
                     device2 = input("网络接口2（子网卡2）: ")
                     mode = input("bonding 模式: ")
                     try:
-                        subprocess.run(['python','-m','controller.vsdsiptool.main','bonding','create',bond_name,'-ip',ip,'-d',device1,device2,'-m',mode], check=True)
+                        # subprocess.run(['python3','-m','controller.vsdsiptool.main','bonding','create',bond_name,'-ip',ip,'-d',device1,device2,'-m',mode], check=True)
+                        subprocess.run(['./vsdsiptool-v1.0.0/vsdsiptool','bonding','create',bond_name,'-ip',ip,'-d',device1,device2,'-m',mode], check=True)
                     except subprocess.CalledProcessError as e:
                         print(f"配置Bonding网络失败: {e}")
                         sys.exit()
@@ -151,7 +154,8 @@ class Control:
                     ip = input("ip: ")
                     device = input("网络接口（网卡）: ")
                     try:
-                        subprocess.run(['python','-m','controller.vsdsiptool.main','ip','create','-ip',ip,'-d',device], check=True)
+                        # subprocess.run(['python3','-m','controller.vsdsiptool.main','ip','create','-ip',ip,'-d',device], check=True)
+                        subprocess.run(['./vsdsiptool-v1.0.0/vsdsiptool','ip','create','-ip',ip,'-d',device], check=True)
                     except subprocess.CalledProcessError as e:
                         print(f"配置普通网络失败: {e}")
                         sys.exit()
@@ -169,12 +173,14 @@ class Control:
         user_input = input("是否已填写配置文件 (y/n)，按其他键跳过 ssh 免密配置: ").lower()
         if user_input == "y":
             try:
-                subprocess.run(['python', '-m', 'controller.vsdssshfree.main', '-m'], check=True)
+                # subprocess.run(['python3', '-m', 'controller.vsdssshfree.main', '-m'], check=True)
+                subprocess.run(['./vsdssshfree-v1.0.0/vsdssshfree', '-m'], check=True)
             except subprocess.CalledProcessError as e:
                 print(f"sshfree -m 失败: {e}")
                 sys.exit()
             try:
-                subprocess.run(['python', '-m', 'controller.vsdssshfree.main', 'fe'], check=True)
+                # subprocess.run(['python3', '-m', 'controller.vsdssshfree.main', 'fe'], check=True)
+                subprocess.run(['./vsdssshfree-v1.0.0/vsdssshfree', 'fe'], check=True)
             except subprocess.CalledProcessError as e:
                 print(f"sshfree fe 失败: {e}")
                 sys.exit()
@@ -191,12 +197,14 @@ class Control:
         user_input = input("是否已填写配置文件 (y/n)，按其他键跳过 DRBD/LINSTOR 安装: ").lower()
         if user_input == "y":
             try:
-                subprocess.run(['python', '-m', 'controller.vsdsinstaller_k.main', '-i'], check=True)
+                # subprocess.run(['python3', '-m', 'controller.vsdsinstaller_k.main', '-i'], check=True)
+                subprocess.run(['./vsdsinstaller-k-v1.0.2/vsdsinstaller-k', '-i'], check=True)
             except subprocess.CalledProcessError as e:
                 print(f"vsdsinstaller_k -i 失败: {e}")
                 sys.exit()
             try:
-                subprocess.run(['python', '-m', 'controller.vsdsinstaller_k.main', '-t'], check=True)
+                # subprocess.run(['python3', '-m', 'controller.vsdsinstaller_k.main', '-t'], check=True)
+                subprocess.run(['./vsdsinstaller-k-v1.0.2/vsdsinstaller-k', '-t'], check=True)
             except subprocess.CalledProcessError as e:
                 print(f"vsdsinstaller_k -t 失败: {e}")
                 sys.exit()
@@ -214,7 +222,8 @@ class Control:
         user_input = input("是否已填写配置文件 (y/n)，按其他键跳过高可用软件安装: ").lower()
         if user_input == "y":
             try:
-                subprocess.run(['python', '-m', 'controller.vsdsinstaller_u.main', '-u'], check=True)
+                # subprocess.run(['python3', '-m', 'controller.vsdsinstaller_u.main', '-u'], check=True)
+                subprocess.run(['./vsdsinstaller-u-v1.0.2/vsdsinstaller-u', '-u'], check=True)
             except subprocess.CalledProcessError as e:
                 print(f"vsdsinstaller_u -i 失败: {e}")
                 sys.exit()
@@ -232,7 +241,8 @@ class Control:
         user_input = input("是否进行 VersaSDS 预配置 (y/n)，按其他键跳过 VersaSDS 预配置: ").lower()
         if user_input == "y":
             try:
-                subprocess.run(['python', '-m', 'controller.vsdspreset.main'], check=True)
+                # subprocess.run(['python3', '-m', 'controller.vsdspreset.main'], check=True)
+                subprocess.run(['./vsdspreset-v1.0.1/vsdspreset'], check=True)
             except subprocess.CalledProcessError as e:
                 print(f"vsdspreset 失败: {e}")
                 sys.exit()
@@ -290,7 +300,7 @@ class Control:
         user_input = input("是否执行配置 (y/n)，按其他键跳过高可用配置: ").lower()
         if user_input == "y":
             try:
-                subprocess.run(['python', '-m', 'controller.vsdshaconf.main', 'exetnd'], check=True)
+                subprocess.run(['./vsdshaconf-v1.1.0/vsdshaconf', 'exetnd'], check=True)
             except subprocess.CalledProcessError as e:
                 print(f"vsdshaconf 失败: {e}")
                 sys.exit()
@@ -307,7 +317,7 @@ class Control:
         if user_input == "y":
             if user_input == "y":
                 try:
-                    subprocess.run(['python', '-m', 'controller.csmpreinstaller.main'], check=True)
+                    subprocess.run(['./csmpreinstaller-v1.0.0/csmpreinstaller'], check=True)
                 except subprocess.CalledProcessError as e:
                     print(f"安装 docker & kubeadm 等软件 失败: {e}")
                     sys.exit()

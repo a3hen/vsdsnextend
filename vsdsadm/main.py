@@ -6,7 +6,7 @@ import yaml
 import logging
 
 
-def init_config(path="./config.yaml"):
+def init_config(path="vsdsadm_config.yaml"):
     try:
         with open(path, 'r') as file:
             config = yaml.safe_load(file)
@@ -139,7 +139,7 @@ def adjusting_linstordb():
         if len(nodes) != len(linstordb_list):
             difference = [item for item in nodes if item not in linstordb_list]
             for i in difference:
-                create_res = subprocess.run(["linstor" "r" "c", i, "linstordb", "--storage-pool", node_dict[i][0]],
+                create_res = subprocess.run(["linstor", "r", "c", i, "linstordb", "--storage-pool", node_dict[i][0]],
                                             capture_output=True, text=True)
                 log_data = f"'localhost' - 'linstor r c {i} linstordb --storage-pool {node_dict[i][0]}' - {create_res.stdout}"
                 Log().logger.info(log_data)
@@ -222,6 +222,7 @@ def _count_pvc():
         if pvc in result:
             result[pvc].append(node)
         else:
+            
             result[pvc] = [node]
     return result
 
@@ -249,4 +250,10 @@ class Log(object):
 
 if __name__ == "__main__":
     a = init_config()
-    print(a)
+    create_or_update_linstor_conf(controller_ip=a["controller_ip"])
+    append_fixed_content_to_file(password=a['passphrase'])
+    start_satellite()
+    create_node(node_name=a["local_node_name"],node_ip=a["local_node_ip"])
+    create_pv_vg_tp_sp(device=["device"],node_name=a["local_node_name"])
+    adjusting_linstordb()
+    adjusting_pvc()
