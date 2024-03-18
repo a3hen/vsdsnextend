@@ -306,7 +306,7 @@ class Control:
         user_input = input("是否执行配置 (y/n)，按其他键跳过高可用配置: ").lower()
         if user_input == "y":
             try:
-                subprocess.run(['./vsdshaconf-v1.1.0/vsdshaconf', 'exetnd'], check=True)
+                subprocess.run(['./vsdshaconf-v1.1.0/vsdshaconf', 'extend'], check=True)
             except subprocess.CalledProcessError as e:
                 print(f"vsdshaconf 失败: {e}")
                 sys.exit()
