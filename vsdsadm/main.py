@@ -45,7 +45,6 @@ def append_fixed_content_to_file(password):
     try:
         with open(filepath, 'a') as file:
             file.write(content)
-            print(f"lisntor.toml的密码更新为: {password}")
     except Exception as e:
         print(f"写入文件时发生错误: {e}")
 
@@ -57,7 +56,7 @@ def create_node(node_name, node_ip):
         Log().logger.info(log_data)
         print(f"节点 {node_name} 已创建")
     except subprocess.CalledProcessError as e:
-        print(f"节点 {node_name} 创建失败: {e}")
+        print(f"节点 {node_name} 创建失败")
         sys.exit()
 
 
@@ -116,8 +115,7 @@ def adjusting_linstordb():
                 log_data = f"'localhost' - 'linstor r c {name} linstordb --storage-pool {sp}' - {create_res.stdout}"
                 Log().logger.info(log_data)
                 if create_res.returncode != 0:
-                    print(f"命令 linstor r c {name} linstordb --storage-pool {sp} 执行失败，错误信息如下：")
-                    print(create_res.stderr)
+                    print(f"命令 linstor r c {name} linstordb --storage-pool {sp} 执行失败")
                     sys.exit()
     else:
         if len(nodes) != len(linstordb_list):
@@ -128,8 +126,7 @@ def adjusting_linstordb():
                 log_data = f"'localhost' - 'linstor r c {i} linstordb --storage-pool {node_dict[i][0]}' - {create_res.stdout}"
                 Log().logger.info(log_data)
                 if create_res.returncode != 0:
-                    print(f"命令 linstor r c {i} linstordb --storage-pool {node_dict[i][0]} 执行失败，错误信息如下：")
-                    print(create_res.stderr)
+                    print(f"命令 linstor r c {i} linstordb --storage-pool {node_dict[i][0]} 执行失败")
                     sys.exit()
     print("linstordb资源调整完成")
 
@@ -155,8 +152,7 @@ def adjusting_pvc():
                     log_data = f"'localhost' - 'linstor r c {name} linstordb --storage-pool {sp}' - {create_res.stdout}"
                     Log().logger.info(log_data)
                     if create_res.returncode != 0:
-                        print(f"命令 linstor r c {name} {pvc_name} --storage-pool {sp} 执行失败，错误信息如下：")
-                        print(create_res.stderr)
+                        print(f"命令 linstor r c {name} {pvc_name} --storage-pool {sp} 执行失败")
                         sys.exit()
             else:
                 print(f"资源 {pvc_name} 已有3个或以上的副本，无需调整。")
@@ -170,8 +166,7 @@ def adjusting_pvc():
                     log_data = f"'localhost' - 'linstor r c {i} linstordb --storage-pool {node_dict[i][0]}' - {create_res.stdout}"
                     Log().logger.info(log_data)
                     if create_res.returncode != 0:
-                        print(f"命令 linstor r c {i} {pvc_name} --storage-pool {node_dict[i][0]} 执行失败，错误信息如下：")
-                        print(create_res.stderr)
+                        print(f"命令 linstor r c {i} {pvc_name} --storage-pool {node_dict[i][0]} 执行失败")
                         sys.exit()
     print("'pvc-'资源调整完成")
 
@@ -241,11 +236,4 @@ class Log(object):
 
 
 if __name__ == "__main__":
-    a = init_config()
-    create_or_update_linstor_conf(controller_ip=a["controller_ip"])
-    append_fixed_content_to_file(password=a['passphrase'])
-    start_satellite()
-    create_node(node_name=a["local_node_name"],node_ip=a["local_node_ip"])
-    create_pv_vg_tp_sp(device=["device"],node_name=a["local_node_name"])
-    adjusting_linstordb()
-    adjusting_pvc()
+    pass

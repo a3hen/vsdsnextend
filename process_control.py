@@ -20,7 +20,7 @@ class Control:
         print("节点拓展程序")
         print("* * * * * * * * * * * * * * * *")
         print("  请选择要执行的操作(0~12)，按其他键退出程序:")
-        print("  0: * 替换内核操作")
+        print("  0: * 替换内核操作(必须要先替换内核后才能进行下面的操作)")
         print("  1: * 顺序执行配置流程")
         print("  2: 安装和配置network manager")
         print("  3: 配置网络")
@@ -38,7 +38,6 @@ class Control:
         if user_input == '0':
             self.replacement_kernel()
         elif user_input == '1':
-            self.replacement_kernel_check()
             self.vsdsipconf()
             self.vsdsiptool()
             self.vsdssshfree()
@@ -75,22 +74,14 @@ class Control:
             print("退出程序")
             sys.exit()
 
-    def replacement_kernel_check(self):
-        user_input = input("是否按照要求替换好内核 (y/n)，按其他键退出程序: ").lower()
-        if user_input == 'y':
-            print("已替换好内核，即将安装软件")
-        elif user_input.lower() == 'n':
-            print("请先替换内核，再安装软件")
-        else:
-            print("请先替换内核，再安装软件")
-            sys.exit()
-
     def replacement_kernel(self):
         user_input = input("是否开始替换内核 (y/n)，按其他键退出程序: ").lower()
         if user_input == 'y':
             try:
-                # subprocess.run(['python3', '-m', 'controller.vsdsinstaller_k.main', '-r'], check=True)
-                subprocess.run(['./vsdsinstaller-k-v1.0.2/vsdsinstaller-k', '-r'], check=True)
+                current_dir = os.getcwd()
+                os.chdir('./vsdsinstaller-k-v1.0.2')
+                subprocess.run(['./vsdsinstaller-k', '-r'], check=True)
+                os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
                 print(f"vsdsinstaller_k -r 失败: {e}")
                 sys.exit()
@@ -107,8 +98,10 @@ class Control:
         user_input = input("是否已填写配置文件 (y/n)，按其他键跳过安装网络配置: ").lower()
         if user_input == 'y':
             try:
-                # subprocess.run(['python3', '-m', 'controller.vsdsipconf.main'], check=True)
-                subprocess.run(['./vsdsipconf-v1.0.2/vsdsipconf'], check=True)
+                current_dir = os.getcwd()
+                os.chdir('./vsdsipconf-v1.0.2')
+                subprocess.run(['./vsdsipconf'], check=True)
+                os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
                 print(f"安装网络配置工具失败: {e}")
                 sys.exit()
@@ -144,7 +137,10 @@ class Control:
                     mode = input("bonding 模式: ")
                     try:
                         # subprocess.run(['python3','-m','controller.vsdsiptool.main','bonding','create',bond_name,'-ip',ip,'-d',device1,device2,'-m',mode], check=True)
-                        subprocess.run(['./vsdsiptool-v1.0.0/vsdsiptool','bonding','create',bond_name,'-ip',ip,'-d',device1,device2,'-m',mode], check=True)
+                        current_dir = os.getcwd()
+                        os.chdir('./vsdsiptool-v1.0.0')
+                        subprocess.run(['./vsdsiptool','bonding','create',bond_name,'-ip',ip,'-d',device1,device2,'-m',mode], check=True)
+                        os.chdir(current_dir)
                     except subprocess.CalledProcessError as e:
                         print(f"配置Bonding网络失败: {e}")
                         sys.exit()
@@ -154,8 +150,10 @@ class Control:
                     ip = input("ip: ")
                     device = input("网络接口（网卡）: ")
                     try:
-                        # subprocess.run(['python3','-m','controller.vsdsiptool.main','ip','create','-ip',ip,'-d',device], check=True)
-                        subprocess.run(['./vsdsiptool-v1.0.0/vsdsiptool','ip','create','-ip',ip,'-d',device], check=True)
+                        current_dir = os.getcwd()
+                        os.chdir('./vsdsiptool-v1.0.0')
+                        subprocess.run(['./vsdsiptool','ip','create','-ip',ip,'-d',device], check=True)
+                        os.chdir(current_dir)
                     except subprocess.CalledProcessError as e:
                         print(f"配置普通网络失败: {e}")
                         sys.exit()
@@ -173,14 +171,18 @@ class Control:
         user_input = input("是否已填写配置文件 (y/n)，按其他键跳过 ssh 免密配置: ").lower()
         if user_input == "y":
             try:
-                # subprocess.run(['python3', '-m', 'controller.vsdssshfree.main', '-m'], check=True)
-                subprocess.run(['./vsdssshfree-v1.0.0/vsdssshfree', 'm'], check=True)
+                current_dir = os.getcwd()
+                os.chdir('./vsdssshfree-v1.0.0')
+                subprocess.run(['./vsdssshfree', 'm'], check=True)
+                os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
                 print(f"sshfree -m 失败: {e}")
                 sys.exit()
             try:
-                # subprocess.run(['python3', '-m', 'controller.vsdssshfree.main', 'fe'], check=True)
-                subprocess.run(['./vsdssshfree-v1.0.0/vsdssshfree', 'fe'], check=True)
+                current_dir = os.getcwd()
+                os.chdir('./vsdssshfree-v1.0.0')
+                subprocess.run(['./vsdssshfree', 'fe'], check=True)
+                os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
                 print(f"sshfree fe 失败: {e}")
                 sys.exit()
@@ -197,14 +199,18 @@ class Control:
         user_input = input("是否已填写配置文件 (y/n)，按其他键跳过 DRBD/LINSTOR 安装: ").lower()
         if user_input == "y":
             try:
-                # subprocess.run(['python3', '-m', 'controller.vsdsinstaller_k.main', '-i'], check=True)
-                subprocess.run(['./vsdsinstaller-k-v1.0.2/vsdsinstaller-k', '-i'], check=True)
+                current_dir = os.getcwd()
+                os.chdir('./vsdsinstaller-k-v1.0.2')
+                subprocess.run(['./vsdsinstaller-k', '-i'], check=True)
+                os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
                 print(f"vsdsinstaller_k -i 失败: {e}")
                 sys.exit()
             try:
-                # subprocess.run(['python3', '-m', 'controller.vsdsinstaller_k.main', '-t'], check=True)
-                subprocess.run(['./vsdsinstaller-k-v1.0.2/vsdsinstaller-k', '-t'], check=True)
+                current_dir = os.getcwd()
+                os.chdir('./vsdsinstaller-k-v1.0.2')
+                subprocess.run(['./vsdsinstaller-k', '-t'], check=True)
+                os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
                 print(f"vsdsinstaller_k -t 失败: {e}")
                 sys.exit()
@@ -222,8 +228,10 @@ class Control:
         user_input = input("是否已填写配置文件 (y/n)，按其他键跳过高可用软件安装: ").lower()
         if user_input == "y":
             try:
-                # subprocess.run(['python3', '-m', 'controller.vsdsinstaller_u.main', '-u'], check=True)
-                subprocess.run(['./vsdsinstaller-u-v1.0.2/vsdsinstaller-u'], check=True)
+                current_dir = os.getcwd()
+                os.chdir('./vsdsinstaller-u-v1.0.3')
+                subprocess.run(['./vsdsinstaller-u'], check=True)
+                os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
                 print(f"vsdsinstaller_u 失败: {e}")
                 sys.exit()
@@ -241,8 +249,10 @@ class Control:
         user_input = input("是否进行 VersaSDS 预配置 (y/n)，按其他键跳过 VersaSDS 预配置: ").lower()
         if user_input == "y":
             try:
-                # subprocess.run(['python3', '-m', 'controller.vsdspreset.main'], check=True)
-                subprocess.run(['./vsdspreset-v1.0.1/vsdspreset'], check=True)
+                current_dir = os.getcwd()
+                os.chdir('./vsdspreset-v1.0.1')
+                subprocess.run(['./vsdspreset'], check=True)
+                os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
                 print(f"vsdspreset 失败: {e}")
                 sys.exit()
@@ -256,13 +266,38 @@ class Control:
     # 执行vsdsadm，配置 LVM 和 LINSTOR 集群
     def vsdsadm(self):
         print("配置 LVM 和 LINSTOR 集群，如已配置可以跳过")
-        user_input = input("是否配置 LVM 和 LINSTOR 集群 (y/n)，按其他键跳过配置 LVM 和 LINSTOR 集群").lower()
-        controller_ip_input = input("请输入controller ip: ")
-        passphrase_input = input("请输入集群密码: ")
-        nodename_input = input("请输入本节点的节点名: ")
-        nodeip_input = input("请输入本节点的ip: ")
-        device_input = input("请输入用于创建存储池的硬盘: ")
+        user_input = input("是否配置 LVM 和 LINSTOR 集群 (y/n)，按其他键跳过配置 LVM 和 LINSTOR 集群: ").lower()
         if user_input == "y":
+            while True:
+                controller_ip_input = input("请输入controller ip: ")
+                if not controller_ip_input.strip():
+                    print("controller ip 不能为空，请重新输入。")
+                    continue
+                break
+            while True:
+                passphrase_input = input("请输入集群密码: ")
+                if not passphrase_input.strip():
+                    print("集群密码不能为空，请重新输入。")
+                    continue
+                break
+            while True:
+                nodename_input = input("请输入本节点的节点名: ")
+                if not nodename_input.strip():
+                    print("节点名不能为空，请重新输入。")
+                    continue
+                break
+            while True:
+                nodeip_input = input("请输入本节点的ip: ")
+                if not nodeip_input.strip():
+                    print("节点ip不能为空，请重新输入。")
+                    continue
+                break
+            while True:
+                device_input = input("请输入用于创建存储池的硬盘: ")
+                if not device_input.strip():
+                    print("硬盘信息不能为空，请重新输入。")
+                    continue
+                break
             # 配置linstor-client.conf
             vsdsadm.main.create_or_update_linstor_conf(controller_ip=controller_ip_input)
             # 配置linstor.toml
@@ -272,7 +307,7 @@ class Control:
             # 创建新节点
             vsdsadm.main.create_node(node_name=nodename_input, node_ip=nodeip_input)
             # 创建lvm、存储池
-            vsdsadm.main.create_pv_vg_tp_sp(device=device_input,node_name=nodename_input)
+            vsdsadm.main.create_pv_vg_tp_sp(device=device_input, node_name=nodename_input)
             # 调整 linstordb 副本
             vsdsadm.main.adjusting_linstordb()
             # 调整 PVC 副本
@@ -283,13 +318,15 @@ class Control:
         else:
             print("跳过配置 LVM 和 LINSTOR 集群")
             print("程序继续执行")
-
     def vsdscoroconf(self):
         print("配置 Corosync，如已配置可以跳过")
         user_input = input("是否已填写配置文件 (y/n)，按其他键跳过 Corosync 配置: ").lower()
         if user_input == "y":
             try:
-                subprocess.run(['./vsdscoroconf-v1.0.1/vsdscoroconf'], check=True)
+                current_dir = os.getcwd()
+                os.chdir('./vsdscoroconf-v1.1.0')
+                subprocess.run(['./vsdscoroconf'], check=True)
+                os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
                 print(f"vsdscoroconf 失败: {e}")
                 sys.exit()
@@ -306,7 +343,10 @@ class Control:
         user_input = input("是否执行配置 (y/n)，按其他键跳过高可用配置: ").lower()
         if user_input == "y":
             try:
-                subprocess.run(['./vsdshaconf-v1.1.0/vsdshaconf', 'extend'], check=True)
+                current_dir = os.getcwd()
+                os.chdir('./vsdshaconf-v1.1.0')
+                subprocess.run(['./vsdshaconf', 'extend'], check=True)
+                os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
                 print(f"vsdshaconf 失败: {e}")
                 sys.exit()
@@ -323,7 +363,10 @@ class Control:
         if user_input == "y":
             if user_input == "y":
                 try:
-                    subprocess.run(['./csmpreinstaller-v1.0.0/csmpreinstaller'], check=True)
+                    current_dir = os.getcwd()
+                    os.chdir('./csmpreinstaller-v1.0.0')
+                    subprocess.run(['./csmpreinstaller'], check=True)
+                    os.chdir(current_dir)
                 except subprocess.CalledProcessError as e:
                     print(f"安装 docker & kubeadm 等软件 失败: {e}")
                     sys.exit()
