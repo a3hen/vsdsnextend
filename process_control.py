@@ -308,7 +308,7 @@ class Control:
             # 创建新节点
             vsdsadm.main.create_node(node_name=nodename_input, node_ip=nodeip_input)
             # 创建lvm、存储池
-            vsdsadm.main.create_pv_vg_tp_sp(device=devices_input, node_name=nodename_input)
+            vsdsadm.main.create_pv_vg_tp_sp(devices=devices_input, node_name=nodename_input)
             # 调整 linstordb 副本
             vsdsadm.main.adjusting_linstordb()
             # 调整 PVC 副本
