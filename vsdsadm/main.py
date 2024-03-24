@@ -6,7 +6,7 @@ import logging
 
 def start_satellite():
     try:
-        result = subprocess.run(["systemctl", "start", "linstor-satellite"], check=True)
+        result = subprocess.run(["systemctl", "start", "linstor-satellite"], capture_output=True, check=True)
         log_data = f"'localhost' - 'systemctl start linstor-satellite' - {result.stdout}"
         Log().logger.info(log_data)
         print("linstor-satellite服务已启动")
@@ -17,7 +17,7 @@ def start_satellite():
 
 def start_controller():
     try:
-        result = subprocess.run(["systemctl", "start", "linstor-controller"], check=True)
+        result = subprocess.run(["systemctl", "start", "linstor-controller"], capture_output=True, check=True)
         log_data = f"'localhost' - 'systemctl start linstor-controller' - {result.stdout}"
         Log().logger.info(log_data)
         print("linstor-controller服务已启动")
@@ -51,7 +51,7 @@ def append_fixed_content_to_file(password):
 
 def create_node(node_name, node_ip):
     try:
-        result = subprocess.run(["linstor", "node", "create", node_name, node_ip, "--node-type", "Combined"], check=True)
+        result = subprocess.run(["linstor", "node", "create", node_name, node_ip, "--node-type", "Combined"], capture_output=True, check=True)
         log_data = f"'localhost' - 'linstor node create {node_name} {node_ip} --node-type Combined' - {result.stdout}"
         Log().logger.info(log_data)
         print(f"节点 {node_name} 已创建")
