@@ -60,19 +60,21 @@ def create_node(node_name, node_ip):
         sys.exit()
 
 
-def create_pv_vg_tp_sp(device, node_name):
-    create_pv = subprocess.run(["pvcreate", device], capture_output=True, text=True)
-    log_data = f"'localhost' - 'pvcreate {device}' - {create_pv.stdout}"
-    Log().logger.info(log_data)
-    if create_pv.returncode != 0:
-        print(f"命令 pvcreate {device} 执行失败，错误信息如下：")
-        print(create_pv.stderr)
-        sys.exit()
-    create_vg = subprocess.run(["vgcreate", "vg0", device], capture_output=True, text=True)
-    log_data = f"'localhost' - 'vgcreate vg0 {device}' - {create_vg.stdout}"
+def create_pv_vg_tp_sp(devices, node_name):
+    for device in devices:
+        create_pv = subprocess.run(["pvcreate", device], capture_output=True, text=True)
+        log_data = f"'localhost' - 'pvcreate {device}' - {create_pv.stdout}"
+        Log().logger.info(log_data)
+        if create_pv.returncode != 0:
+            print(f"命令 pvcreate {device} 执行失败，错误信息如下：")
+            print(create_pv.stderr)
+            sys.exit()
+    vgcreate_command = ["vgcreate", "vg0"] + devices
+    create_vg = subprocess.run(vgcreate_command, capture_output=True, text=True)
+    log_data = f"'localhost' - 'vgcreate vg0 {' '.join(devices)}' - {create_vg.stdout}"
     Log().logger.info(log_data)
     if create_vg.returncode != 0:
-        print(f"命令 vgcreate vg0 {device} 执行失败，错误信息如下：")
+        print(f"命令 vgcreate vg0 {' '.join(devices)} 执行失败，错误信息如下：")
         print(create_vg.stderr)
         sys.exit()
     create_lv = subprocess.run(["lvcreate", "-l", "+100%free", "--thinpool", "tp0", "vg0"], capture_output=True,
