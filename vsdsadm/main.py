@@ -104,6 +104,7 @@ def adjusting_linstordb():
         return
     elif linstordb_list == []:
         print("没有linstordb资源")
+        return
     nodes = list(node_dict.keys())
     if len(nodes) >= 3:
         if len(linstordb_list) < 3:
@@ -135,11 +136,11 @@ def adjusting_linstordb():
 
 def adjusting_pvc():
     node_dict = _count_nodes()
-    if node_dict == {}:
+    pvc_dict = _count_pvc()
+    if pvc_dict == {}:
         print("没有pvc-相关资源")
         return
     nodes = list(node_dict.keys())
-    pvc_dict = _count_pvc()
     pvc_nodes = list(pvc_dict.keys())
     for pvc_name in pvc_nodes:
         if len(nodes) >= 3:
