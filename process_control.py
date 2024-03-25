@@ -326,7 +326,7 @@ class Control:
             try:
                 current_dir = os.getcwd()
                 os.chdir('./vsdscoroconf-v1.1.0')
-                subprocess.run(['./vsdscoroconf'], check=True)
+                subprocess.run(['./vsdscoroconf', '-a'], check=True)
                 os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
                 print(f"vsdscoroconf 失败: {e}")
