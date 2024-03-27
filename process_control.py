@@ -79,11 +79,14 @@ class Control:
         if user_input == 'y':
             try:
                 current_dir = os.getcwd()
+                if not os.path.exists('./vsdsinstaller-k-v1.0.2'):
+                    print(f"错误：目录 './vsdsinstaller-k-v1.0.2' 不存在。")
+                    sys.exit(1)
                 os.chdir('./vsdsinstaller-k-v1.0.2')
                 subprocess.run(['./vsdsinstaller-k', '-r'], check=True)
                 os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
-                print(f"vsdsinstaller_k -r 失败: {e}")
+                print(f"vsdsinstaller_k -r 失败 ")
                 sys.exit()
             print("已替换好内核，需要重启系统，并选择此内核启动")
         elif user_input.lower() == 'n':
@@ -99,11 +102,14 @@ class Control:
         if user_input == 'y':
             try:
                 current_dir = os.getcwd()
+                if not os.path.exists('./vsdsipconf-v1.0.2'):
+                    print(f"错误：目录 './vsdsipconf-v1.0.2' 不存在。")
+                    sys.exit(1)
                 os.chdir('./vsdsipconf-v1.0.2')
                 subprocess.run(['./vsdsipconf'], check=True)
                 os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
-                print(f"安装网络配置工具失败: {e}")
+                print(f"安装网络配置工具失败")
                 sys.exit()
         elif user_input.lower() == 'n':
             print("请先填写配置文件")
@@ -120,6 +126,9 @@ class Control:
             print("退出 ip 配置")
             print("程序继续执行")
         elif user_input.lower() == 'n':
+            if not os.path.exists('./vsdsiptool-v1.0.0'):
+                print(f"错误：目录 './vsdsiptool-v1.0.0' 不存在。")
+                sys.exit(1)
             print("* * * * * * * * * * * * * * * *")
             print("  请选择要执行的操作(1~3):")
             print("  1: 配置Bonding网络")
@@ -142,7 +151,7 @@ class Control:
                         subprocess.run(['./vsdsiptool','bonding','create',bond_name,'-ip',ip,'-d',device1,device2,'-m',mode], check=True)
                         os.chdir(current_dir)
                     except subprocess.CalledProcessError as e:
-                        print(f"配置Bonding网络失败: {e}")
+                        print(f"配置Bonding网络失败 ")
                         sys.exit()
                     break
                 elif choose_input == '2':
@@ -155,7 +164,7 @@ class Control:
                         subprocess.run(['./vsdsiptool','ip','create','-ip',ip,'-d',device], check=True)
                         os.chdir(current_dir)
                     except subprocess.CalledProcessError as e:
-                        print(f"配置普通网络失败: {e}")
+                        print(f"配置普通网络失败")
                         sys.exit()
                     break
                 elif choose_input == '3':
@@ -172,11 +181,14 @@ class Control:
         if user_input == "y":
             try:
                 current_dir = os.getcwd()
+                if not os.path.exists('./vsdssshfree-v1.0.0'):
+                    print(f"错误：目录 './vsdssshfree-v1.0.0' 不存在。")
+                    sys.exit(1)
                 os.chdir('./vsdssshfree-v1.0.0')
                 subprocess.run(['./vsdssshfree', 'm'], check=True)
                 os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
-                print(f"sshfree -m 失败: {e}")
+                print(f"sshfree -m 失败")
                 sys.exit()
             try:
                 current_dir = os.getcwd()
@@ -200,11 +212,14 @@ class Control:
         if user_input == "y":
             try:
                 current_dir = os.getcwd()
+                if not os.path.exists('./vsdsinstaller-k-v1.0.2'):
+                    print(f"错误：目录 './vsdsinstaller-k-v1.0.2' 不存在。")
+                    sys.exit(1)
                 os.chdir('./vsdsinstaller-k-v1.0.2')
                 subprocess.run(['./vsdsinstaller-k', '-i'], check=True)
                 os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
-                print(f"vsdsinstaller_k -i 失败: {e}")
+                print(f"vsdsinstaller_k -i 失败")
                 sys.exit()
             try:
                 current_dir = os.getcwd()
@@ -212,7 +227,7 @@ class Control:
                 subprocess.run(['./vsdsinstaller-k', '-t'], check=True)
                 os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
-                print(f"vsdsinstaller_k -t 失败: {e}")
+                print(f"vsdsinstaller_k -t 失败")
                 sys.exit()
         elif user_input == "n":
             print("请先填写配置文件")
@@ -229,6 +244,9 @@ class Control:
         if user_input == "y":
             try:
                 current_dir = os.getcwd()
+                if not os.path.exists('./vsdsinstaller-u-v1.0.3'):
+                    print(f"错误：目录 './vsdsinstaller-u-v1.0.3' 不存在。")
+                    sys.exit(1)
                 os.chdir('./vsdsinstaller-u-v1.0.3')
                 subprocess.run(['./vsdsinstaller-u'], check=True)
                 os.chdir(current_dir)
@@ -250,11 +268,14 @@ class Control:
         if user_input == "y":
             try:
                 current_dir = os.getcwd()
+                if not os.path.exists('./vsdspreset-v1.0.1'):
+                    print(f"错误：目录 './vsdspreset-v1.0.1' 不存在。")
+                    sys.exit(1)
                 os.chdir('./vsdspreset-v1.0.1')
                 subprocess.run(['./vsdspreset'], check=True)
                 os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
-                print(f"vsdspreset 失败: {e}")
+                print(f"vsdspreset 失败 ")
                 sys.exit()
         elif user_input == "n":
             print("退出程序")
@@ -272,12 +293,6 @@ class Control:
                 controller_ip_input = input("请输入controller ip: ")
                 if not controller_ip_input.strip():
                     print("controller ip 不能为空，请重新输入。")
-                    continue
-                break
-            while True:
-                passphrase_input = input("请输入集群密码: ")
-                if not passphrase_input.strip():
-                    print("集群密码不能为空，请重新输入。")
                     continue
                 break
             while True:
@@ -302,7 +317,7 @@ class Control:
             # 配置linstor-client.conf
             vsdsadm.main.create_or_update_linstor_conf(controller_ip=controller_ip_input)
             # 配置linstor.toml
-            vsdsadm.main.append_fixed_content_to_file(password=passphrase_input)
+            vsdsadm.main.append_fixed_content_to_file(password="")
             # 开启satellite
             vsdsadm.main.start_satellite()
             # 创建新节点
@@ -325,11 +340,14 @@ class Control:
         if user_input == "y":
             try:
                 current_dir = os.getcwd()
+                if not os.path.exists('./vsdscoroconf-v1.1.0'):
+                    print(f"错误：目录 './vsdscoroconf-v1.1.0' 不存在。")
+                    sys.exit(1)
                 os.chdir('./vsdscoroconf-v1.1.0')
                 subprocess.run(['./vsdscoroconf', '-a'], check=True)
                 os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
-                print(f"vsdscoroconf 失败: {e}")
+                print(f"vsdscoroconf 失败")
                 sys.exit()
         elif user_input == "n":
             print("请先填写配置文件")
@@ -345,11 +363,14 @@ class Control:
         if user_input == "y":
             try:
                 current_dir = os.getcwd()
+                if not os.path.exists('./vsdshaconf-v1.1.0'):
+                    print(f"错误：目录 './vsdshaconf-v1.1.0' 不存在。")
+                    sys.exit(1)
                 os.chdir('./vsdshaconf-v1.1.0')
                 subprocess.run(['./vsdshaconf', 'extend'], check=True)
                 os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
-                print(f"vsdshaconf 失败: {e}")
+                print(f"vsdshaconf 失败")
                 sys.exit()
         elif user_input == "n":
             print("退出程序")
@@ -365,11 +386,14 @@ class Control:
             if user_input == "y":
                 try:
                     current_dir = os.getcwd()
+                    if not os.path.exists('./csmpreinstaller-v1.0.0'):
+                        print(f"错误：目录 './csmpreinstaller-v1.0.0' 不存在。")
+                        sys.exit(1)
                     os.chdir('./csmpreinstaller-v1.0.0')
                     subprocess.run(['./csmpreinstaller'], check=True)
                     os.chdir(current_dir)
                 except subprocess.CalledProcessError as e:
-                    print(f"安装 docker & kubeadm 等软件 失败: {e}")
+                    print(f"安装 docker & kubeadm 等软件 失败")
                     sys.exit()
         elif user_input == "n":
             print("退出程序")

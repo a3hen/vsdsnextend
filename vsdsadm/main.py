@@ -3,6 +3,7 @@ import sys
 import re
 import subprocess
 import logging
+import datetime
 
 def start_satellite():
     try:
@@ -11,6 +12,8 @@ def start_satellite():
         Log().logger.info(log_data)
         print("linstor-satellite服务已启动")
     except subprocess.CalledProcessError as e:
+        log_data = f"'localhost' - 'systemctl start linstor-satellite' - ERROR: {e}"
+        Log().logger.error(log_data)
         print(f"启动linstor-satellite服务失败: {e}")
         sys.exit()
 
@@ -22,6 +25,8 @@ def start_controller():
         Log().logger.info(log_data)
         print("linstor-controller服务已启动")
     except subprocess.CalledProcessError as e:
+        log_data = f"'localhost' - 'systemctl start linstor-controller' - ERROR: {e}"
+        Log().logger.error(log_data)
         print(f"启动linstor-controller服务失败: {e}")
         sys.exit()
 
@@ -36,6 +41,8 @@ def create_or_update_linstor_conf(controller_ip):
             conf_file.write(conf_content)
         print(f"lisntor-client.conf的controller ip更新为: {controller_ip}")
     except Exception as e:
+        log_data = f"'localhost' - 'conf_file.write([global]\ncontrollers={controller_ip})' - ERROR: {e}"
+        Log().logger.error(log_data)
         print(f"写入lisntor-client.conf时发生错误: {e}")
 
 
@@ -46,6 +53,8 @@ def append_fixed_content_to_file(password):
         with open(filepath, 'a') as file:
             file.write(content)
     except Exception as e:
+        log_data = f"'localhost' - 'file.write(\n[encrypt]\npassphrase=""\n)' - ERROR: {e}"
+        Log().logger.error(log_data)
         print(f"写入文件时发生错误: {e}")
 
 
@@ -56,6 +65,8 @@ def create_node(node_name, node_ip):
         Log().logger.info(log_data)
         print(f"节点 {node_name} 已创建")
     except subprocess.CalledProcessError as e:
+        log_data = f"'localhost' - 'linstor node create {node_name} {node_ip} --node-type Combined' - ERROR: {e}"
+        Log().logger.error(log_data)
         print(f"节点 {node_name} 创建失败")
         sys.exit()
 
@@ -63,36 +74,50 @@ def create_node(node_name, node_ip):
 def create_pv_vg_tp_sp(devices, node_name):
     for device in devices:
         create_pv = subprocess.run(["pvcreate", device], capture_output=True, text=True)
-        log_data = f"'localhost' - 'pvcreate {device}' - {create_pv.stdout}"
-        Log().logger.info(log_data)
         if create_pv.returncode != 0:
-            print(f"命令 pvcreate {device} 执行失败，错误信息如下：")
+            log_data = f"'localhost' - 'pvcreate {device}' - ERROR: {create_pv.stderr}"
+            Log().logger.error(log_data)
+            print(f"命令 pvcreate {device} 执行失败")
             print(create_pv.stderr)
             sys.exit()
+        else:
+            log_data = f"'localhost' - 'pvcreate {device}' - {create_pv.stdout}"
+            Log().logger.info(log_data)
+
     vgcreate_command = ["vgcreate", "vg0"] + devices
     create_vg = subprocess.run(vgcreate_command, capture_output=True, text=True)
-    log_data = f"'localhost' - 'vgcreate vg0 {' '.join(devices)}' - {create_vg.stdout}"
-    Log().logger.info(log_data)
     if create_vg.returncode != 0:
-        print(f"命令 vgcreate vg0 {' '.join(devices)} 执行失败，错误信息如下：")
+        log_data = f"'localhost' - 'vgcreate vg0 {' '.join(devices)}' - ERROR: {create_vg.stderr}"
+        Log().logger.error(log_data)
+        print(f"命令 vgcreate vg0 {' '.join(devices)} 执行失败")
         print(create_vg.stderr)
         sys.exit()
-    create_lv = subprocess.run(["lvcreate", "-l", "+100%free", "--thinpool", "tp0", "vg0"], capture_output=True,
-                               text=True)
-    log_data = f"'localhost' - 'lvcreate -l +100%free --thinpool tp0 vg0' - {create_lv.stdout}"
-    Log().logger.info(log_data)
+    else:
+        log_data = f"'localhost' - 'vgcreate vg0 {' '.join(devices)}' - {create_vg.stdout}"
+        Log().logger.info(log_data)
+
+    create_lv = subprocess.run(["lvcreate", "-l", "+100%free", "--thinpool", "tp0", "vg0"], capture_output=True, text=True)
     if create_lv.returncode != 0:
-        print(f"命令lvcreate -l +100%free --thinpool tp0 vg0 执行失败，错误信息如下：")
+        log_data = f"'localhost' - 'lvcreate -l +100%free --thinpool tp0 vg0' - ERROR: {create_lv.stderr}"
+        Log().logger.error(log_data)
+        print(f"命令 lvcreate -l +100%free --thinpool tp0 vg0 执行失败")
         print(create_lv.stderr)
         sys.exit()
-    create_sp = subprocess.run(["linstor", "sp", "c", "lvmthin", node_name, "thpool0", "vg0/tp0"], capture_output=True,
-                               text=True)
-    log_data = f"'localhost' - 'linstor sp c lvmthin {node_name} thpool0 vg0/tp0' - {create_sp.stdout}"
-    Log().logger.info(log_data)
+    else:
+        log_data = f"'localhost' - 'lvcreate -l +100%free --thinpool tp0 vg0' - {create_lv.stdout}"
+        Log().logger.info(log_data)
+
+    create_sp = subprocess.run(["linstor", "sp", "c", "lvmthin", node_name, "thpool0", "vg0/tp0"], capture_output=True, text=True)
     if create_sp.returncode != 0:
-        print(f"命令linstor sp c lvmthin {node_name} thpool0 vg0/tp0执行失败，错误信息如下：")
+        log_data = f"'localhost' - 'linstor sp c lvmthin {node_name} thpool0 vg0/tp0' - ERROR: {create_sp.stderr}"
+        Log().logger.error(log_data)
+        print(f"命令 linstor sp c lvmthin {node_name} thpool0 vg0/tp0 执行失败")
         print(create_sp.stderr)
         sys.exit()
+    else:
+        log_data = f"'localhost' - 'linstor sp c lvmthin {node_name} thpool0 vg0/tp0' - {create_sp.stdout}"
+        Log().logger.info(log_data)
+
     print("pv、vg、thinpool、存储池创建完成")
 
 
@@ -113,24 +138,28 @@ def adjusting_linstordb():
             for i in range(3 - len(linstordb_list)):
                 name = keys[i]
                 sp = d_node_dict[name][0]
-                create_res = subprocess.run(["linstor" "r" "c", name, "linstordb", "--storage-pool", sp],
-                                            capture_output=True, text=True)
-                log_data = f"'localhost' - 'linstor r c {name} linstordb --storage-pool {sp}' - {create_res.stdout}"
-                Log().logger.info(log_data)
+                create_res = subprocess.run(["linstor", "r", "c", name, "linstordb", "--storage-pool", sp], capture_output=True, text=True)
                 if create_res.returncode != 0:
+                    log_data = f"'localhost' - 'linstor r c {name} linstordb --storage-pool {sp}' - ERROR: {create_res.stderr}"
+                    Log().logger.error(log_data)
                     print(f"命令 linstor r c {name} linstordb --storage-pool {sp} 执行失败")
                     sys.exit()
+                else:
+                    log_data = f"'localhost' - 'linstor r c {name} linstordb --storage-pool {sp}' - {create_res.stdout}"
+                    Log().logger.info(log_data)
     else:
         if len(nodes) != len(linstordb_list):
             difference = [item for item in nodes if item not in linstordb_list]
             for i in difference:
-                create_res = subprocess.run(["linstor", "r", "c", i, "linstordb", "--storage-pool", node_dict[i][0]],
-                                            capture_output=True, text=True)
-                log_data = f"'localhost' - 'linstor r c {i} linstordb --storage-pool {node_dict[i][0]}' - {create_res.stdout}"
-                Log().logger.info(log_data)
+                create_res = subprocess.run(["linstor", "r", "c", i, "linstordb", "--storage-pool", node_dict[i][0]], capture_output=True, text=True)
                 if create_res.returncode != 0:
+                    log_data = f"'localhost' - 'linstor r c {i} linstordb --storage-pool {node_dict[i][0]}' - ERROR: {create_res.stderr}"
+                    Log().logger.error(log_data)
                     print(f"命令 linstor r c {i} linstordb --storage-pool {node_dict[i][0]} 执行失败")
                     sys.exit()
+                else:
+                    log_data = f"'localhost' - 'linstor r c {i} linstordb --storage-pool {node_dict[i][0]}' - {create_res.stdout}"
+                    Log().logger.info(log_data)
     print("linstordb资源调整完成")
 
 
@@ -152,11 +181,14 @@ def adjusting_pvc():
                     sp = d_node_dict[name][0]
                     create_res = subprocess.run(["linstor", "r", "c", name, pvc_name, "--storage-pool", sp],
                                                 capture_output=True, text=True)
-                    log_data = f"'localhost' - 'linstor r c {name} linstordb --storage-pool {sp}' - {create_res.stdout}"
-                    Log().logger.info(log_data)
                     if create_res.returncode != 0:
+                        log_data = f"'localhost' - 'linstor r c {name} {pvc_name} --storage-pool {sp}' - ERROR: {create_res.stderr}"
+                        Log().logger.error(log_data)
                         print(f"命令 linstor r c {name} {pvc_name} --storage-pool {sp} 执行失败")
                         sys.exit()
+                    else:
+                        log_data = f"'localhost' - 'linstor r c {name} {pvc_name} --storage-pool {sp}' - {create_res.stdout}"
+                        Log().logger.info(log_data)
             else:
                 print(f"资源 {pvc_name} 已有3个或以上的副本，无需调整。")
                 return
@@ -166,11 +198,14 @@ def adjusting_pvc():
                 for i in difference:
                     create_res = subprocess.run(["linstor", "r", "c", i, pvc_name, "--storage-pool", node_dict[i][0]],
                                                 capture_output=True, text=True)
-                    log_data = f"'localhost' - 'linstor r c {i} linstordb --storage-pool {node_dict[i][0]}' - {create_res.stdout}"
-                    Log().logger.info(log_data)
                     if create_res.returncode != 0:
+                        log_data = f"'localhost' - 'linstor r c {i} {pvc_name} --storage-pool {node_dict[i][0]}' - ERROR: {create_res.stderr}"
+                        Log().logger.error(log_data)
                         print(f"命令 linstor r c {i} {pvc_name} --storage-pool {node_dict[i][0]} 执行失败")
                         sys.exit()
+                    else:
+                        log_data = f"'localhost' - 'linstor r c {i} {pvc_name} --storage-pool {node_dict[i][0]}' - {create_res.stdout}"
+                        Log().logger.info(log_data)
     print("'pvc-'资源调整完成")
 
 
@@ -231,7 +266,8 @@ class Log(object):
 
     @staticmethod
     def set_handler(logger):
-        fh = logging.FileHandler('./vsdsadm.log', mode='a')
+        log_filename = datetime.datetime.now().strftime('vsdsadm_%Y-%m-%d.log')
+        fh = logging.FileHandler(log_filename, mode='a')
         fh.setLevel(logging.DEBUG)
         formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
         fh.setFormatter(formatter)
