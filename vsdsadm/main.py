@@ -266,7 +266,7 @@ class Log(object):
 
     @staticmethod
     def set_handler(logger):
-        log_filename = datetime.datetime.now().strftime('vsdsadm_%Y-%m-%d.log')
+        log_filename = datetime.datetime.now().strftime('./vsdsadm-v1.0.1/vsdsadm_%Y-%m-%d.log')
         fh = logging.FileHandler(log_filename, mode='a')
         fh.setLevel(logging.DEBUG)
         formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")

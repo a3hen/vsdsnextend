@@ -2,6 +2,8 @@ import sys
 import os
 import subprocess
 import vsdsadm
+import logging
+import datetime
 
 
 
@@ -9,6 +11,27 @@ def check_root():
     if os.geteuid() != 0:
         print("此脚本需要 root 权限运行。请以 root 用户执行此操作。")
         sys.exit(1)
+
+class Log(object):
+    def __init__(self):
+        pass
+    def __new__(cls, *args, **kwargs):
+        if not hasattr(cls, '_instance'):
+            Log._instance = super().__new__(cls)
+            Log._instance.logger = logging.getLogger()
+            Log._instance.logger.setLevel(logging.INFO)
+            Log.set_handler(Log._instance.logger)
+        return Log._instance
+
+    @staticmethod
+    def set_handler(logger):
+        log_filename = datetime.datetime.now().strftime('./vsdsadm-v1.0.1/vsdsadm_%Y-%m-%d.log')
+        fh = logging.FileHandler(log_filename, mode='a')
+        fh.setLevel(logging.DEBUG)
+        formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+        fh.setFormatter(formatter)
+        logger.addHandler(fh)
+
 
 
 class Control:
@@ -83,9 +106,13 @@ class Control:
                     print(f"错误：目录 './vsdsinstaller-k-v1.0.2' 不存在。")
                     sys.exit(1)
                 os.chdir('./vsdsinstaller-k-v1.0.2')
-                subprocess.run(['./vsdsinstaller-k', '-r'], check=True)
+                result = subprocess.run(['./vsdsinstaller-k', '-r'], check=True)
+                log_data = f"'localhost' - './vsdsinstaller-k -r' - {result.stdout}"
+                Log().logger.info(log_data)
                 os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
+                log_data = f"'localhost' - './vsdsinstaller-k -r' - ERROR: {e}"
+                Log().logger.error(log_data)
                 print(f"vsdsinstaller_k -r 失败 ")
                 sys.exit()
             print("已替换好内核，需要重启系统，并选择此内核启动")
@@ -106,9 +133,13 @@ class Control:
                     print(f"错误：目录 './vsdsipconf-v1.0.2' 不存在。")
                     sys.exit(1)
                 os.chdir('./vsdsipconf-v1.0.2')
-                subprocess.run(['./vsdsipconf'], check=True)
+                result = subprocess.run(['./vsdsipconf'], check=True)
+                log_data = f"'localhost' - './vsdsipconf' - {result.stdout}"
+                Log().logger.info(log_data)
                 os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
+                log_data = f"'localhost' - './vsdsipconf' - ERROR: {e}"
+                Log().logger.error(log_data)
                 print(f"安装网络配置工具失败")
                 sys.exit()
         elif user_input.lower() == 'n':
@@ -148,9 +179,13 @@ class Control:
                         # subprocess.run(['python3','-m','controller.vsdsiptool.main','bonding','create',bond_name,'-ip',ip,'-d',device1,device2,'-m',mode], check=True)
                         current_dir = os.getcwd()
                         os.chdir('./vsdsiptool-v1.0.0')
-                        subprocess.run(['./vsdsiptool','bonding','create',bond_name,'-ip',ip,'-d',device1,device2,'-m',mode], check=True)
+                        result = subprocess.run(['./vsdsiptool','bonding','create',bond_name,'-ip',ip,'-d',device1,device2,'-m',mode], check=True)
+                        log_data = f"'localhost' - './vsdsiptool bonding create {bond_name} -ip {ip} -d {device1} {device2} -m {mode}' - {result.stdout}"
+                        Log().logger.info(log_data)
                         os.chdir(current_dir)
                     except subprocess.CalledProcessError as e:
+                        log_data = f"'localhost' - './vsdsiptool bonding create {bond_name} -ip {ip} -d {device1} {device2} -m {mode}' - ERROR: {e}"
+                        Log().logger.error(log_data)
                         print(f"配置Bonding网络失败 ")
                         sys.exit()
                     break
@@ -161,9 +196,13 @@ class Control:
                     try:
                         current_dir = os.getcwd()
                         os.chdir('./vsdsiptool-v1.0.0')
-                        subprocess.run(['./vsdsiptool','ip','create','-ip',ip,'-d',device], check=True)
+                        result = subprocess.run(['./vsdsiptool','ip','create','-ip',ip,'-d',device], check=True)
+                        log_data = f"'localhost' - './vsdsiptool ip create -ip {ip} -d {device}' - {result.stdout}"
+                        Log().logger.info(log_data)
                         os.chdir(current_dir)
                     except subprocess.CalledProcessError as e:
+                        log_data = f"'localhost' - ./vsdsiptool ip create -ip {ip} -d {device}' - ERROR: {e}"
+                        Log().logger.error(log_data)
                         print(f"配置普通网络失败")
                         sys.exit()
                     break
@@ -185,17 +224,25 @@ class Control:
                     print(f"错误：目录 './vsdssshfree-v1.0.0' 不存在。")
                     sys.exit(1)
                 os.chdir('./vsdssshfree-v1.0.0')
-                subprocess.run(['./vsdssshfree', 'm'], check=True)
+                result = subprocess.run(['./vsdssshfree', 'm'], check=True)
+                log_data = f"'localhost' - './vsdssshfree m' - {result.stdout}"
+                Log().logger.info(log_data)
                 os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
+                log_data = f"'localhost' - './vsdssshfree m' - ERROR: {e}"
+                Log().logger.error(log_data)
                 print(f"sshfree -m 失败")
                 sys.exit()
             try:
                 current_dir = os.getcwd()
                 os.chdir('./vsdssshfree-v1.0.0')
-                subprocess.run(['./vsdssshfree', 'fe'], check=True)
+                result = subprocess.run(['./vsdssshfree', 'fe'], check=True)
+                log_data = f"'localhost' - './vsdssshfree fe' - {result.stdout}"
+                Log().logger.info(log_data)
                 os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
+                log_data = f"'localhost' - './vsdssshfree fe' - ERROR: {e}"
+                Log().logger.error(log_data)
                 print(f"sshfree fe 失败: {e}")
                 sys.exit()
         elif user_input == "n":
@@ -216,17 +263,25 @@ class Control:
                     print(f"错误：目录 './vsdsinstaller-k-v1.0.2' 不存在。")
                     sys.exit(1)
                 os.chdir('./vsdsinstaller-k-v1.0.2')
-                subprocess.run(['./vsdsinstaller-k', '-i'], check=True)
+                result = subprocess.run(['./vsdsinstaller-k', '-i'], check=True)
+                log_data = f"'localhost' - './vsdsinstaller-k -i' - {result.stdout}"
+                Log().logger.info(log_data)
                 os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
+                log_data = f"'localhost' - './vsdsinstaller-k -i' - ERROR: {e}"
+                Log().logger.error(log_data)
                 print(f"vsdsinstaller_k -i 失败")
                 sys.exit()
             try:
                 current_dir = os.getcwd()
                 os.chdir('./vsdsinstaller-k-v1.0.2')
-                subprocess.run(['./vsdsinstaller-k', '-t'], check=True)
+                result = subprocess.run(['./vsdsinstaller-k', '-t'], check=True)
+                log_data = f"'localhost' - './vsdsinstaller-k -t' - {result.stdout}"
+                Log().logger.info(log_data)
                 os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
+                log_data = f"'localhost' - './vsdsinstaller-k -t' - ERROR: {e}"
+                Log().logger.error(log_data)
                 print(f"vsdsinstaller_k -t 失败")
                 sys.exit()
         elif user_input == "n":
@@ -248,9 +303,13 @@ class Control:
                     print(f"错误：目录 './vsdsinstaller-u-v1.0.3' 不存在。")
                     sys.exit(1)
                 os.chdir('./vsdsinstaller-u-v1.0.3')
-                subprocess.run(['./vsdsinstaller-u'], check=True)
+                result = subprocess.run(['./vsdsinstaller-u'], check=True)
+                log_data = f"'localhost' - './vsdsinstaller-u' - {result.stdout}"
+                Log().logger.info(log_data)
                 os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
+                log_data = f"'localhost' - './vsdsinstaller-u' - ERROR: {e}"
+                Log().logger.error(log_data)
                 print(f"vsdsinstaller_u 失败: {e}")
                 sys.exit()
         elif user_input == "n":
@@ -272,9 +331,13 @@ class Control:
                     print(f"错误：目录 './vsdspreset-v1.0.1' 不存在。")
                     sys.exit(1)
                 os.chdir('./vsdspreset-v1.0.1')
-                subprocess.run(['./vsdspreset'], check=True)
+                result = subprocess.run(['./vsdspreset'], check=True)
+                log_data = f"'localhost' - './vsdspreset' - {result.stdout}"
+                Log().logger.info(log_data)
                 os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
+                log_data = f"'localhost' - './vsdspreset' - ERROR: {e}"
+                Log().logger.error(log_data)
                 print(f"vsdspreset 失败 ")
                 sys.exit()
         elif user_input == "n":
@@ -344,10 +407,14 @@ class Control:
                     print(f"错误：目录 './vsdscoroconf-v1.1.0' 不存在。")
                     sys.exit(1)
                 os.chdir('./vsdscoroconf-v1.1.0')
-                subprocess.run(['./vsdscoroconf', '-a'], check=True)
+                result = subprocess.run(['./vsdscoroconf', '-a'], check=True)
+                log_data = f"'localhost' - './vsdscoroconf -a' - {result.stdout}"
+                Log().logger.info(log_data)
                 os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
-                print(f"vsdscoroconf 失败")
+                log_data = f"'localhost' - './vsdscoroconf -a' - ERROR: {e}"
+                Log().logger.error(log_data)
+                print(f"vsdscoroconf -a失败")
                 sys.exit()
         elif user_input == "n":
             print("请先填写配置文件")
@@ -367,9 +434,13 @@ class Control:
                     print(f"错误：目录 './vsdshaconf-v1.1.0' 不存在。")
                     sys.exit(1)
                 os.chdir('./vsdshaconf-v1.1.0')
-                subprocess.run(['./vsdshaconf', 'extend'], check=True)
+                result = subprocess.run(['./vsdshaconf', 'extend'], check=True)
+                log_data = f"'localhost' - './vsdshaconf extend' - {result.stdout}"
+                Log().logger.info(log_data)
                 os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
+                log_data = f"'localhost' - './vsdshaconf extend' - ERROR: {e}"
+                Log().logger.error(log_data)
                 print(f"vsdshaconf 失败")
                 sys.exit()
         elif user_input == "n":
@@ -390,9 +461,13 @@ class Control:
                         print(f"错误：目录 './csmpreinstaller-v1.0.0' 不存在。")
                         sys.exit(1)
                     os.chdir('./csmpreinstaller-v1.0.0')
-                    subprocess.run(['./csmpreinstaller'], check=True)
+                    result = subprocess.run(['./csmpreinstaller'], check=True)
+                    log_data = f"'localhost' - './csmpreinstaller' - {result.stdout}"
+                    Log().logger.info(log_data)
                     os.chdir(current_dir)
                 except subprocess.CalledProcessError as e:
+                    log_data = f"'localhost' - './csmpreinstaller' - ERROR: {e}"
+                    Log().logger.error(log_data)
                     print(f"安装 docker & kubeadm 等软件 失败")
                     sys.exit()
         elif user_input == "n":
