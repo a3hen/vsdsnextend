@@ -240,7 +240,7 @@ def _count_pvc():
     # 返回一个字典，为有"pvc-"的资源名和节点名的键值对
     res_info = subprocess.run(["linstor", "r", "lv"], capture_output=True, text=True)
     data = res_info.stdout
-    pattern = r"\|\s*(\w+)\s*\|\s*(pvc-\w+)\s*\|"
+    pattern = r"\|\s*(\w+)\s*\|\s*(pvc-[\w-]+)\s*\|"
     matches = re.findall(pattern, data)
     result = {}
     for node, pvc in matches:
