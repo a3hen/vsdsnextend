@@ -107,9 +107,9 @@ class Control:
                     sys.exit(1)
                 os.chdir('./vsdsinstaller-k-v1.0.2')
                 result = subprocess.run(['./vsdsinstaller-k', '-r'], check=True)
+                os.chdir(current_dir)
                 log_data = f"'localhost' - './vsdsinstaller-k -r' - {result.stdout}"
                 Log().logger.info(log_data)
-                os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
                 log_data = f"'localhost' - './vsdsinstaller-k -r' - ERROR: {e}"
                 Log().logger.error(log_data)
@@ -134,9 +134,9 @@ class Control:
                     sys.exit(1)
                 os.chdir('./vsdsipconf-v1.0.2')
                 result = subprocess.run(['./vsdsipconf'], check=True)
+                os.chdir(current_dir)
                 log_data = f"'localhost' - './vsdsipconf' - {result.stdout}"
                 Log().logger.info(log_data)
-                os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
                 log_data = f"'localhost' - './vsdsipconf' - ERROR: {e}"
                 Log().logger.error(log_data)
@@ -180,9 +180,9 @@ class Control:
                         current_dir = os.getcwd()
                         os.chdir('./vsdsiptool-v1.0.0')
                         result = subprocess.run(['./vsdsiptool','bonding','create',bond_name,'-ip',ip,'-d',device1,device2,'-m',mode], check=True)
+                        os.chdir(current_dir)
                         log_data = f"'localhost' - './vsdsiptool bonding create {bond_name} -ip {ip} -d {device1} {device2} -m {mode}' - {result.stdout}"
                         Log().logger.info(log_data)
-                        os.chdir(current_dir)
                     except subprocess.CalledProcessError as e:
                         log_data = f"'localhost' - './vsdsiptool bonding create {bond_name} -ip {ip} -d {device1} {device2} -m {mode}' - ERROR: {e}"
                         Log().logger.error(log_data)
@@ -197,9 +197,9 @@ class Control:
                         current_dir = os.getcwd()
                         os.chdir('./vsdsiptool-v1.0.0')
                         result = subprocess.run(['./vsdsiptool','ip','create','-ip',ip,'-d',device], check=True)
+                        os.chdir(current_dir)
                         log_data = f"'localhost' - './vsdsiptool ip create -ip {ip} -d {device}' - {result.stdout}"
                         Log().logger.info(log_data)
-                        os.chdir(current_dir)
                     except subprocess.CalledProcessError as e:
                         log_data = f"'localhost' - ./vsdsiptool ip create -ip {ip} -d {device}' - ERROR: {e}"
                         Log().logger.error(log_data)
@@ -225,9 +225,9 @@ class Control:
                     sys.exit(1)
                 os.chdir('./vsdssshfree-v1.0.0')
                 result = subprocess.run(['./vsdssshfree', 'm'], check=True)
+                os.chdir(current_dir)
                 log_data = f"'localhost' - './vsdssshfree m' - {result.stdout}"
                 Log().logger.info(log_data)
-                os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
                 log_data = f"'localhost' - './vsdssshfree m' - ERROR: {e}"
                 Log().logger.error(log_data)
@@ -237,9 +237,9 @@ class Control:
                 current_dir = os.getcwd()
                 os.chdir('./vsdssshfree-v1.0.0')
                 result = subprocess.run(['./vsdssshfree', 'fe'], check=True)
+                os.chdir(current_dir)
                 log_data = f"'localhost' - './vsdssshfree fe' - {result.stdout}"
                 Log().logger.info(log_data)
-                os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
                 log_data = f"'localhost' - './vsdssshfree fe' - ERROR: {e}"
                 Log().logger.error(log_data)
@@ -264,9 +264,9 @@ class Control:
                     sys.exit(1)
                 os.chdir('./vsdsinstaller-k-v1.0.2')
                 result = subprocess.run(['./vsdsinstaller-k', '-i'], check=True)
+                os.chdir(current_dir)
                 log_data = f"'localhost' - './vsdsinstaller-k -i' - {result.stdout}"
                 Log().logger.info(log_data)
-                os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
                 log_data = f"'localhost' - './vsdsinstaller-k -i' - ERROR: {e}"
                 Log().logger.error(log_data)
@@ -276,9 +276,9 @@ class Control:
                 current_dir = os.getcwd()
                 os.chdir('./vsdsinstaller-k-v1.0.2')
                 result = subprocess.run(['./vsdsinstaller-k', '-t'], check=True)
+                os.chdir(current_dir)
                 log_data = f"'localhost' - './vsdsinstaller-k -t' - {result.stdout}"
                 Log().logger.info(log_data)
-                os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
                 log_data = f"'localhost' - './vsdsinstaller-k -t' - ERROR: {e}"
                 Log().logger.error(log_data)
@@ -304,9 +304,9 @@ class Control:
                     sys.exit(1)
                 os.chdir('./vsdsinstaller-u-v1.0.3')
                 result = subprocess.run(['./vsdsinstaller-u'], check=True)
+                os.chdir(current_dir)
                 log_data = f"'localhost' - './vsdsinstaller-u' - {result.stdout}"
                 Log().logger.info(log_data)
-                os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
                 log_data = f"'localhost' - './vsdsinstaller-u' - ERROR: {e}"
                 Log().logger.error(log_data)
@@ -332,9 +332,9 @@ class Control:
                     sys.exit(1)
                 os.chdir('./vsdspreset-v1.0.1')
                 result = subprocess.run(['./vsdspreset'], check=True)
+                os.chdir(current_dir)
                 log_data = f"'localhost' - './vsdspreset' - {result.stdout}"
                 Log().logger.info(log_data)
-                os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
                 log_data = f"'localhost' - './vsdspreset' - ERROR: {e}"
                 Log().logger.error(log_data)
@@ -408,9 +408,9 @@ class Control:
                     sys.exit(1)
                 os.chdir('./vsdscoroconf-v1.1.0')
                 result = subprocess.run(['./vsdscoroconf', '-a'], check=True)
+                os.chdir(current_dir)
                 log_data = f"'localhost' - './vsdscoroconf -a' - {result.stdout}"
                 Log().logger.info(log_data)
-                os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
                 log_data = f"'localhost' - './vsdscoroconf -a' - ERROR: {e}"
                 Log().logger.error(log_data)
@@ -435,9 +435,9 @@ class Control:
                     sys.exit(1)
                 os.chdir('./vsdshaconf-v1.1.0')
                 result = subprocess.run(['./vsdshaconf', 'extend'], check=True)
+                os.chdir(current_dir)
                 log_data = f"'localhost' - './vsdshaconf extend' - {result.stdout}"
                 Log().logger.info(log_data)
-                os.chdir(current_dir)
             except subprocess.CalledProcessError as e:
                 log_data = f"'localhost' - './vsdshaconf extend' - ERROR: {e}"
                 Log().logger.error(log_data)
@@ -462,9 +462,9 @@ class Control:
                         sys.exit(1)
                     os.chdir('./csmpreinstaller-v1.0.0')
                     result = subprocess.run(['./csmpreinstaller'], check=True)
+                    os.chdir(current_dir)
                     log_data = f"'localhost' - './csmpreinstaller' - {result.stdout}"
                     Log().logger.info(log_data)
-                    os.chdir(current_dir)
                 except subprocess.CalledProcessError as e:
                     log_data = f"'localhost' - './csmpreinstaller' - ERROR: {e}"
                     Log().logger.error(log_data)
