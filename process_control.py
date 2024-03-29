@@ -14,31 +14,29 @@ def check_root():
         print("此脚本需要 root 权限运行。请以 root 用户执行此操作。")
         sys.exit(1)
 
-class Log(object):
-    def __init__(self):
-        pass
-    def __new__(cls, *args, **kwargs):
-        if not hasattr(cls, '_instance'):
-            Log._instance = super().__new__(cls)
-            Log._instance.logger = logging.getLogger()
-            Log._instance.logger.setLevel(logging.INFO)
-            Log.set_handler(Log._instance.logger)
-        return Log._instance
+class Log:
+    _loggers = {}
 
-    @staticmethod
-    def set_handler(logger):
-        log_filename = datetime.datetime.now().strftime('./vsdsnextend_%Y-%m-%d.log')
-        fh = logging.FileHandler(log_filename, mode='a')
-        fh.setLevel(logging.DEBUG)
-        formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
-        fh.setFormatter(formatter)
-        logger.addHandler(fh)
+    @classmethod
+    def get_logger(cls, module_name):
+        if module_name not in cls._loggers:
+            logger = logging.getLogger(module_name)
+            logger.setLevel(logging.INFO)
+            log_filename = datetime.datetime.now().strftime(f'{module_name}_%Y-%m-%d.log')
+            fh = logging.FileHandler(log_filename, mode='a')
+            fh.setLevel(logging.DEBUG)
+            formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+            fh.setFormatter(formatter)
+            logger.addHandler(fh)
+            cls._loggers[module_name] = logger
+        return cls._loggers[module_name]
 
 
 
 class Control:
     def __init__(self):
         self.main()
+        self.logger_nextend = Log.get_logger('./vsdsnextend')
 
     def main(self):
         check_root()
@@ -111,10 +109,10 @@ class Control:
                 result = subprocess.run(['./vsdsinstaller-k', '-r'], check=True)
                 os.chdir(current_dir)
                 log_data = f"'localhost' - './vsdsinstaller-k -r' - {result.stdout}"
-                Log().logger.info(log_data)
+                self.logger_nextend.info(log_data)
             except subprocess.CalledProcessError as e:
                 log_data = f"'localhost' - './vsdsinstaller-k -r' - ERROR: {e}"
-                Log().logger.error(log_data)
+                self.logger_nextend.error(log_data)
                 print(f"vsdsinstaller_k -r 失败 ")
                 sys.exit()
             print("已替换好内核，需要重启系统，并选择此内核启动")
@@ -138,10 +136,10 @@ class Control:
                 result = subprocess.run(['./vsdsipconf'], check=True)
                 os.chdir(current_dir)
                 log_data = f"'localhost' - './vsdsipconf' - {result.stdout}"
-                Log().logger.info(log_data)
+                self.logger_nextend.info(log_data)
             except subprocess.CalledProcessError as e:
                 log_data = f"'localhost' - './vsdsipconf' - ERROR: {e}"
-                Log().logger.error(log_data)
+                self.logger_nextend.error(log_data)
                 print(f"安装网络配置工具失败")
                 sys.exit()
         elif user_input.lower() == 'n':
@@ -184,10 +182,10 @@ class Control:
                         result = subprocess.run(['./vsdsiptool','bonding','create',bond_name,'-ip',ip,'-d',device1,device2,'-m',mode], check=True)
                         os.chdir(current_dir)
                         log_data = f"'localhost' - './vsdsiptool bonding create {bond_name} -ip {ip} -d {device1} {device2} -m {mode}' - {result.stdout}"
-                        Log().logger.info(log_data)
+                        self.logger_nextend.info(log_data)
                     except subprocess.CalledProcessError as e:
                         log_data = f"'localhost' - './vsdsiptool bonding create {bond_name} -ip {ip} -d {device1} {device2} -m {mode}' - ERROR: {e}"
-                        Log().logger.error(log_data)
+                        self.logger_nextend.error(log_data)
                         print(f"配置Bonding网络失败 ")
                         sys.exit()
                     break
@@ -201,10 +199,10 @@ class Control:
                         result = subprocess.run(['./vsdsiptool','ip','create','-ip',ip,'-d',device], check=True)
                         os.chdir(current_dir)
                         log_data = f"'localhost' - './vsdsiptool ip create -ip {ip} -d {device}' - {result.stdout}"
-                        Log().logger.info(log_data)
+                        self.logger_nextend.info(log_data)
                     except subprocess.CalledProcessError as e:
                         log_data = f"'localhost' - ./vsdsiptool ip create -ip {ip} -d {device}' - ERROR: {e}"
-                        Log().logger.error(log_data)
+                        self.logger_nextend.error(log_data)
                         print(f"配置普通网络失败")
                         sys.exit()
                     break
@@ -229,10 +227,10 @@ class Control:
                 result = subprocess.run(['./vsdssshfree', 'm'], check=True)
                 os.chdir(current_dir)
                 log_data = f"'localhost' - './vsdssshfree m' - {result.stdout}"
-                Log().logger.info(log_data)
+                self.logger_nextend.info(log_data)
             except subprocess.CalledProcessError as e:
                 log_data = f"'localhost' - './vsdssshfree m' - ERROR: {e}"
-                Log().logger.error(log_data)
+                self.logger_nextend.error(log_data)
                 print(f"sshfree -m 失败")
                 sys.exit()
             try:
@@ -241,10 +239,10 @@ class Control:
                 result = subprocess.run(['./vsdssshfree', 'fe'], check=True)
                 os.chdir(current_dir)
                 log_data = f"'localhost' - './vsdssshfree fe' - {result.stdout}"
-                Log().logger.info(log_data)
+                self.logger_nextend.info(log_data)
             except subprocess.CalledProcessError as e:
                 log_data = f"'localhost' - './vsdssshfree fe' - ERROR: {e}"
-                Log().logger.error(log_data)
+                self.logger_nextend.error(log_data)
                 print(f"sshfree fe 失败: {e}")
                 sys.exit()
         elif user_input == "n":
@@ -268,10 +266,10 @@ class Control:
                 result = subprocess.run(['./vsdsinstaller-k', '-i'], check=True)
                 os.chdir(current_dir)
                 log_data = f"'localhost' - './vsdsinstaller-k -i' - {result.stdout}"
-                Log().logger.info(log_data)
+                self.logger_nextend.info(log_data)
             except subprocess.CalledProcessError as e:
                 log_data = f"'localhost' - './vsdsinstaller-k -i' - ERROR: {e}"
-                Log().logger.error(log_data)
+                self.logger_nextend.error(log_data)
                 print(f"vsdsinstaller_k -i 失败")
                 sys.exit()
             try:
@@ -280,10 +278,10 @@ class Control:
                 result = subprocess.run(['./vsdsinstaller-k', '-t'], check=True)
                 os.chdir(current_dir)
                 log_data = f"'localhost' - './vsdsinstaller-k -t' - {result.stdout}"
-                Log().logger.info(log_data)
+                self.logger_nextend.info(log_data)
             except subprocess.CalledProcessError as e:
                 log_data = f"'localhost' - './vsdsinstaller-k -t' - ERROR: {e}"
-                Log().logger.error(log_data)
+                self.logger_nextend.error(log_data)
                 print(f"vsdsinstaller_k -t 失败")
                 sys.exit()
         elif user_input == "n":
@@ -308,10 +306,10 @@ class Control:
                 result = subprocess.run(['./vsdsinstaller-u'], check=True)
                 os.chdir(current_dir)
                 log_data = f"'localhost' - './vsdsinstaller-u' - {result.stdout}"
-                Log().logger.info(log_data)
+                self.logger_nextend.info(log_data)
             except subprocess.CalledProcessError as e:
                 log_data = f"'localhost' - './vsdsinstaller-u' - ERROR: {e}"
-                Log().logger.error(log_data)
+                self.logger_nextend.error(log_data)
                 print(f"vsdsinstaller_u 失败: {e}")
                 sys.exit()
         elif user_input == "n":
@@ -336,10 +334,10 @@ class Control:
                 result = subprocess.run(['./vsdspreset','-e'], check=True)
                 os.chdir(current_dir)
                 log_data = f"'localhost' - './vsdspreset -e' - {result.stdout}"
-                Log().logger.info(log_data)
+                self.logger_nextend.info(log_data)
             except subprocess.CalledProcessError as e:
                 log_data = f"'localhost' - './vsdspreset -e' - ERROR: {e}"
-                Log().logger.error(log_data)
+                self.logger_nextend.error(log_data)
                 print(f"vsdspreset -e失败 ")
                 sys.exit()
         elif user_input == "n":
@@ -351,6 +349,7 @@ class Control:
 
     # 执行vsdsadm，配置 LVM 和 LINSTOR 集群
     def vsdsadm(self):
+        obj = vsdsadm.main.Adm()
         print("配置 LVM 和 LINSTOR 集群，如已配置可以跳过")
         user_input = input("是否配置 LVM 和 LINSTOR 集群 (y/n)，按其他键跳过配置 LVM 和 LINSTOR 集群: ").lower()
         if user_input == "y":
@@ -381,27 +380,27 @@ class Control:
                 break
             try:
                 # 关闭controller
-                vsdsadm.main.stop_controller()
+                obj.stop_controller()
                 # 配置linstor-client.conf
-                vsdsadm.main.create_or_update_linstor_conf(controller_ip=controller_ip_input)
+                obj.create_or_update_linstor_conf(controller_ip=controller_ip_input)
                 # 配置linstor.toml
-                vsdsadm.main.append_fixed_content_to_file(password="")
+                obj.append_fixed_content_to_file(password="")
                 # 开启satellite
-                vsdsadm.main.start_satellite()
+                obj.start_satellite()
                 time.sleep(5)
                 # 创建新节点
-                vsdsadm.main.create_node(node_name=nodename_input, node_ip=nodeip_input)
+                obj.create_node(node_name=nodename_input, node_ip=nodeip_input)
                 # 创建lvm、存储池
-                vsdsadm.main.create_pv_vg_tp_sp(devices=devices_input, node_name=nodename_input)
+                obj.create_pv_vg_tp_sp(devices=devices_input, node_name=nodename_input)
                 # 调整 linstordb 副本
-                vsdsadm.main.adjusting_linstordb()
+                obj.adjusting_linstordb()
                 # 调整 PVC 副本
-                vsdsadm.main.adjusting_pvc()
+                obj.adjusting_pvc()
                 log_data = f"'localhost' - 'vsdsadm' - SUCCESS"
-                Log().logger.info(log_data)
+                self.logger_nextend.info(log_data)
             except Exception as e:
                 log_data = f"'localhost' - 'vsdsadm' - ERROR: {e}"
-                Log().logger.error(log_data)
+                self.logger_nextend.error(log_data)
         elif user_input == "n":
             print("退出程序")
             sys.exit()
@@ -421,10 +420,10 @@ class Control:
                 result = subprocess.run(['./vsdscoroconf', '-a'], check=True)
                 os.chdir(current_dir)
                 log_data = f"'localhost' - './vsdscoroconf -a' - {result.stdout}"
-                Log().logger.info(log_data)
+                self.logger_nextend.info(log_data)
             except subprocess.CalledProcessError as e:
                 log_data = f"'localhost' - './vsdscoroconf -a' - ERROR: {e}"
-                Log().logger.error(log_data)
+                self.logger_nextend.error(log_data)
                 print(f"vsdscoroconf -a失败")
                 sys.exit()
         elif user_input == "n":
@@ -448,10 +447,10 @@ class Control:
                 result = subprocess.run(['./vsdshaconf', 'extend'], check=True)
                 os.chdir(current_dir)
                 log_data = f"'localhost' - './vsdshaconf extend' - {result.stdout}"
-                Log().logger.info(log_data)
+                self.logger_nextend.info(log_data)
             except subprocess.CalledProcessError as e:
                 log_data = f"'localhost' - './vsdshaconf extend' - ERROR: {e}"
-                Log().logger.error(log_data)
+                self.logger_nextend.error(log_data)
                 print(f"vsdshaconf 失败")
                 sys.exit()
         elif user_input == "n":
@@ -475,10 +474,10 @@ class Control:
                     result = subprocess.run(['./csmpreinstaller'], check=True)
                     os.chdir(current_dir)
                     log_data = f"'localhost' - './csmpreinstaller' - {result.stdout}"
-                    Log().logger.info(log_data)
+                    self.logger_nextend.info(log_data)
                 except subprocess.CalledProcessError as e:
                     log_data = f"'localhost' - './csmpreinstaller' - ERROR: {e}"
-                    Log().logger.error(log_data)
+                    self.logger_nextend.error(log_data)
                     print(f"安装 docker & kubeadm 等软件 失败")
                     sys.exit()
         elif user_input == "n":
