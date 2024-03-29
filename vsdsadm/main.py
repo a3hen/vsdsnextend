@@ -229,24 +229,23 @@ class Adm:
         # 返回一个字典，为节点名和存储池的键值对
         sp_info = subprocess.run(["linstor", "sp", "l"], capture_output=True, text=True)
         data = sp_info.stdout
-        pattern = r"\|\s*([\w\d]+)\s*\|\s*(\w+)\s*\|.*?\|\s*([\w\/]+)\s*\|"
+        pattern = r"\|\s*([\w\d]+)\s*\|\s*(hx-node\d+)\s*\|"
         matches = re.findall(pattern, data)
         node_dict = {}
-        for storage_pool, node, _ in matches:
-            if storage_pool in ["StoragePool", "Node", "Driver", "PoolName", "FreeCapacity", "TotalCapacity",
-                                "CanSnapshots", "State", "SharedName"]:
-                continue
+        for pool, node in matches:
             if node not in node_dict:
                 node_dict[node] = []
-            if storage_pool != "DfltDisklessStorPool":
-                node_dict[node].append(storage_pool)
+            # 排除'DfltDisklessStorPool'，因为它不是我们想要的存储池名
+            if pool != "DfltDisklessStorPool":
+                node_dict[node].append(pool)
+        print(node_dict)
         return node_dict
 
     def _count_linstordb(self):
         # 返回一个数组，为有linstordb的节点名
         res_info = subprocess.run(["linstor", "r", "lv"], capture_output=True, text=True)
         data = res_info.stdout
-        pattern = r"\|\s*(\w+)\s*\|\s*linstordb\s*\|"
+        pattern = r"\|\s*([\w-]+)\s*\|\s*linstordb\s*\|"
         nodes = set(re.findall(pattern, data))
         return list(nodes)
 
@@ -254,7 +253,7 @@ class Adm:
         # 返回一个字典，为有"pvc-"的资源名和节点名的键值对
         res_info = subprocess.run(["linstor", "r", "lv"], capture_output=True, text=True)
         data = res_info.stdout
-        pattern = r"\|\s*(\w+)\s*\|\s*(pvc-[\w-]+)\s*\|"
+        pattern = r"\|\s*([^\|]+?)\s*\|\s*(pvc-[\w-]+)\s*\|"
         matches = re.findall(pattern, data)
         result = {}
         for node, pvc in matches:
