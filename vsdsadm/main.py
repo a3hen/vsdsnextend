@@ -238,7 +238,6 @@ class Adm:
             # 排除'DfltDisklessStorPool'，因为它不是我们想要的存储池名
             if pool != "DfltDisklessStorPool":
                 node_dict[node].append(pool)
-        print(node_dict)
         return node_dict
 
     def _count_linstordb(self):
