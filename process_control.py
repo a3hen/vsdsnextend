@@ -259,10 +259,10 @@ class Control:
         if user_input == "y":
             try:
                 current_dir = os.getcwd()
-                if not os.path.exists('./vsdsinstaller-k-v1.0.2'):
-                    print(f"错误：目录 './vsdsinstaller-k-v1.0.2' 不存在。")
+                if not os.path.exists('./vsdsinstaller-k-v1.0.3'):
+                    print(f"错误：目录 './vsdsinstaller-k-v1.0.3' 不存在。")
                     sys.exit(1)
-                os.chdir('./vsdsinstaller-k-v1.0.2')
+                os.chdir('./vsdsinstaller-k-v1.0.3')
                 result = subprocess.run(['./vsdsinstaller-k', '-i'], check=True)
                 os.chdir(current_dir)
                 log_data = f"'localhost' - './vsdsinstaller-k -i' - {result.stdout}"
@@ -274,7 +274,7 @@ class Control:
                 sys.exit()
             try:
                 current_dir = os.getcwd()
-                os.chdir('./vsdsinstaller-k-v1.0.2')
+                os.chdir('./vsdsinstaller-k-v1.0.3')
                 result = subprocess.run(['./vsdsinstaller-k', '-t'], check=True)
                 os.chdir(current_dir)
                 log_data = f"'localhost' - './vsdsinstaller-k -t' - {result.stdout}"
@@ -327,18 +327,18 @@ class Control:
         if user_input == "y":
             try:
                 current_dir = os.getcwd()
-                if not os.path.exists('./vsdspreset-v1.0.1'):
-                    print(f"错误：目录 './vsdspreset-v1.0.1' 不存在。")
+                if not os.path.exists('./vsdspreset-v1.0.2'):
+                    print(f"错误：目录 './vsdspreset-v1.0.2' 不存在。")
                     sys.exit(1)
-                os.chdir('./vsdspreset-v1.0.1')
-                result = subprocess.run(['./vsdspreset'], check=True)
+                os.chdir('./vsdspreset-v1.0.2')
+                result = subprocess.run(['./vsdspreset','-e'], check=True)
                 os.chdir(current_dir)
-                log_data = f"'localhost' - './vsdspreset' - {result.stdout}"
+                log_data = f"'localhost' - './vsdspreset -e' - {result.stdout}"
                 Log().logger.info(log_data)
             except subprocess.CalledProcessError as e:
-                log_data = f"'localhost' - './vsdspreset' - ERROR: {e}"
+                log_data = f"'localhost' - './vsdspreset -e' - ERROR: {e}"
                 Log().logger.error(log_data)
-                print(f"vsdspreset 失败 ")
+                print(f"vsdspreset -e失败 ")
                 sys.exit()
         elif user_input == "n":
             print("退出程序")
@@ -377,20 +377,28 @@ class Control:
                     print("硬盘信息不能为空，请重新输入。")
                     continue
                 break
-            # 配置linstor-client.conf
-            vsdsadm.main.create_or_update_linstor_conf(controller_ip=controller_ip_input)
-            # 配置linstor.toml
-            vsdsadm.main.append_fixed_content_to_file(password="")
-            # 开启satellite
-            vsdsadm.main.start_satellite()
-            # 创建新节点
-            vsdsadm.main.create_node(node_name=nodename_input, node_ip=nodeip_input)
-            # 创建lvm、存储池
-            vsdsadm.main.create_pv_vg_tp_sp(devices=devices_input, node_name=nodename_input)
-            # 调整 linstordb 副本
-            vsdsadm.main.adjusting_linstordb()
-            # 调整 PVC 副本
-            vsdsadm.main.adjusting_pvc()
+            try:
+                # 关闭controller
+                vsdsadm.main.stop_controller()
+                # 配置linstor-client.conf
+                vsdsadm.main.create_or_update_linstor_conf(controller_ip=controller_ip_input)
+                # 配置linstor.toml
+                vsdsadm.main.append_fixed_content_to_file(password="")
+                # 开启satellite
+                vsdsadm.main.start_satellite()
+                # 创建新节点
+                vsdsadm.main.create_node(node_name=nodename_input, node_ip=nodeip_input)
+                # 创建lvm、存储池
+                vsdsadm.main.create_pv_vg_tp_sp(devices=devices_input, node_name=nodename_input)
+                # 调整 linstordb 副本
+                vsdsadm.main.adjusting_linstordb()
+                # 调整 PVC 副本
+                vsdsadm.main.adjusting_pvc()
+                log_data = f"'localhost' - 'vsdsadm' - SUCCESS"
+                Log().logger.info(log_data)
+            except Exception as e:
+                log_data = f"'localhost' - 'vsdsadm' - ERROR: {e}"
+                Log().logger.error(log_data)
         elif user_input == "n":
             print("退出程序")
             sys.exit()

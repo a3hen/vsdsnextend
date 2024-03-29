@@ -17,6 +17,18 @@ def start_satellite():
         print(f"启动linstor-satellite服务失败: {e}")
         sys.exit()
 
+def stop_controller():
+    try:
+        result = subprocess.run(["systemctl", "stop", "linstor-controller"], capture_output=True, check=True)
+        log_data = f"'localhost' - 'systemctl stop linstor-controller' - {result.stdout}"
+        Log().logger.info(log_data)
+        print("linstor-controller服务已关闭")
+    except subprocess.CalledProcessError as e:
+        log_data = f"'localhost' - 'systemctl stop linstor-controller' - ERROR: {e}"
+        Log().logger.error(log_data)
+        print(f"关闭linstor-controller服务失败: {e}")
+        sys.exit()
+
 
 def start_controller():
     try:
@@ -167,7 +179,7 @@ def adjusting_pvc():
     node_dict = _count_nodes()
     pvc_dict = _count_pvc()
     if pvc_dict == {}:
-        print("没有pvc-相关资源")
+        print("没有pvc相关资源")
         return
     nodes = list(node_dict.keys())
     pvc_nodes = list(pvc_dict.keys())
@@ -206,7 +218,7 @@ def adjusting_pvc():
                     else:
                         log_data = f"'localhost' - 'linstor r c {i} {pvc_name} --storage-pool {node_dict[i][0]}' - {create_res.stdout}"
                         Log().logger.info(log_data)
-    print("'pvc-'资源调整完成")
+    print("'pvc'资源调整完成")
 
 
 def _count_nodes():
