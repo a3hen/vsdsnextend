@@ -35,8 +35,8 @@ class Log:
 
 class Control:
     def __init__(self):
-        self.main()
         self.logger_nextend = Log.get_logger('./vsdsnextend')
+        self.main()
 
     def main(self):
         check_root()
