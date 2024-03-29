@@ -229,38 +229,42 @@ class Adm:
         # 返回一个字典，为节点名和存储池的键值对
         sp_info = subprocess.run(["linstor", "sp", "l"], capture_output=True, text=True)
         data = sp_info.stdout
-        pattern = r"\|\s*([\w\d]+)\s*\|\s*(hx-node\d+)\s*\|"
-        matches = re.findall(pattern, data)
-        node_dict = {}
-        for pool, node in matches:
-            if node not in node_dict:
-                node_dict[node] = []
-            # 排除'DfltDisklessStorPool'，因为它不是我们想要的存储池名
-            if pool != "DfltDisklessStorPool":
-                node_dict[node].append(pool)
-        return node_dict
+        matches = re.findall(r"\n\|\s+[\w]+\s+\|\s+([a-zA-Z0-9\S^|]+)", data)
+        unique_nodes = list(set(matches) - {'Node'})
+        nodes_dict = {node: [] for node in unique_nodes}
+
+        for node in unique_nodes:
+            storage_pools = re.findall(rf"([a-zA-Z0-9\S^|]+)\s+\|\s+{node}\s+\|", data)
+            filtered_pools = [pool for pool in storage_pools if pool != 'DfltDisklessStorPool']
+            nodes_dict[node] = filtered_pools
+        return nodes_dict
 
     def _count_linstordb(self):
         # 返回一个数组，为有linstordb的节点名
         res_info = subprocess.run(["linstor", "r", "lv"], capture_output=True, text=True)
         data = res_info.stdout
-        pattern = r"\|\s*([\w-]+)\s*\|\s*linstordb\s*\|"
-        nodes = set(re.findall(pattern, data))
+        pattern = r"\|\s*([^\|]+?)\s*\|\s*linstordb\s*\|[^\|]*\|[^\|]*\|[^\|]*\|[^\|]*\|[^\|]*\|[^\|]*\|\s*([^\|]+?)\s*\|"
+        matches = re.findall(pattern, data)
+        nodes = set()
+        for node, state in matches:
+            if state.strip() != "TieBreaker":  # 排除TieBreaker状态的节点
+                nodes.add(node.strip())
         return list(nodes)
 
     def _count_pvc(self):
         # 返回一个字典，为有"pvc-"的资源名和节点名的键值对
         res_info = subprocess.run(["linstor", "r", "lv"], capture_output=True, text=True)
         data = res_info.stdout
-        pattern = r"\|\s*([^\|]+?)\s*\|\s*(pvc-[\w-]+)\s*\|"
-        matches = re.findall(pattern, data)
+        matches = re.findall(
+            r"\|\s*([^\|]+?)\s*\|\s*(pvc-[\w-]+)\s*\|[^\|]*\|[^\|]*\|[^\|]*\|[^\|]*\|[^\|]*\|[^\|]*\|\s*([^\|]+?)\s*\|",
+            data)
         result = {}
-        for node, pvc in matches:
-            if pvc in result:
-                result[pvc].append(node)
-            else:
-
-                result[pvc] = [node]
+        for node, pvc, state in matches:
+            if state.strip() != "TieBreaker":  # 排除TieBreaker状态的节点
+                if pvc in result:
+                    result[pvc].append(node.strip())
+                else:
+                    result[pvc] = [node.strip()]
         return result
 
 
