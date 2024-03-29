@@ -1,6 +1,8 @@
 import sys
 import os
 import subprocess
+import time
+
 import vsdsadm
 import logging
 import datetime
@@ -386,6 +388,7 @@ class Control:
                 vsdsadm.main.append_fixed_content_to_file(password="")
                 # 开启satellite
                 vsdsadm.main.start_satellite()
+                time.sleep(5)
                 # 创建新节点
                 vsdsadm.main.create_node(node_name=nodename_input, node_ip=nodeip_input)
                 # 创建lvm、存储池
