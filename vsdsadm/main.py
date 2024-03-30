@@ -227,7 +227,7 @@ class Adm:
 
     def _count_nodes(self):
         # 返回一个字典，为节点名和存储池的键值对
-        sp_info = subprocess.run(["linstor", "sp", "l"], capture_output=True, text=True)
+        sp_info = subprocess.run(["linstor", "sp", "l", "-p"], capture_output=True, text=True)
         data = sp_info.stdout
         matches = re.findall(r"\n\|\s+[\w]+\s+\|\s+([a-zA-Z0-9\S^|]+)", data)
         unique_nodes = list(set(matches) - {'Node'})
@@ -241,7 +241,7 @@ class Adm:
 
     def _count_linstordb(self):
         # 返回一个数组，为有linstordb的节点名
-        res_info = subprocess.run(["linstor", "r", "lv"], capture_output=True, text=True)
+        res_info = subprocess.run(["linstor", "r", "lv", "-p"], capture_output=True, text=True)
         data = res_info.stdout
         pattern = r"\|\s*([^\|]+?)\s*\|\s*linstordb\s*\|[^\|]*\|[^\|]*\|[^\|]*\|[^\|]*\|[^\|]*\|[^\|]*\|\s*([^\|]+?)\s*\|"
         matches = re.findall(pattern, data)
@@ -253,7 +253,7 @@ class Adm:
 
     def _count_pvc(self):
         # 返回一个字典，为有"pvc-"的资源名和节点名的键值对
-        res_info = subprocess.run(["linstor", "r", "lv"], capture_output=True, text=True)
+        res_info = subprocess.run(["linstor", "r", "lv", "-p"], capture_output=True, text=True)
         data = res_info.stdout
         matches = re.findall(
             r"\|\s*([^\|]+?)\s*\|\s*(pvc-[\w-]+)\s*\|[^\|]*\|[^\|]*\|[^\|]*\|[^\|]*\|[^\|]*\|[^\|]*\|\s*([^\|]+?)\s*\|",
