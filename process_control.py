@@ -190,18 +190,28 @@ class Control:
                         sys.exit()
                     break
                 elif choose_input == '2':
-                    print("请输入 ip 和 网络接口（网卡）")
+                    print("请输入 ip 和 网络接口（网卡）、DNS(可选)、gateway(可选)、子网掩码(可选)")
                     ip = input("ip: ")
                     device = input("网络接口（网卡）: ")
+                    dns = input("DNS: ")
+                    gateway = input("gateway：")
+                    netmask = input("子网掩码：")
                     try:
                         current_dir = os.getcwd()
                         os.chdir('./vsdsiptool-v1.0.0')
-                        result = subprocess.run(['./vsdsiptool','ip','create','-ip',ip,'-d',device], check=True)
+                        command = ['./vsdsiptool', 'ip', 'create', '-ip', ip, '-d', device]
+                        if dns:
+                            command.extend(['-dns', dns])
+                        if gateway:
+                            command.extend(['-g', gateway])
+                        if netmask:
+                            command.extend(['-m', netmask])
+                        result = subprocess.run(command, check=True)
                         os.chdir(current_dir)
                         log_data = f"'localhost' - './vsdsiptool ip create -ip {ip} -d {device}' - {result.stdout}"
                         self.logger_nextend.info(log_data)
                     except subprocess.CalledProcessError as e:
-                        log_data = f"'localhost' - ./vsdsiptool ip create -ip {ip} -d {device}' - ERROR: {e}"
+                        log_data = f"'localhost' - './vsdsiptool ip create -ip {ip} -d {device}' - ERROR: {e}"
                         self.logger_nextend.error(log_data)
                         print(f"配置普通网络失败")
                         sys.exit()
