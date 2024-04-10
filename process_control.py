@@ -157,8 +157,8 @@ class Control:
             print("退出 ip 配置")
             print("程序继续执行")
         elif user_input.lower() == 'n':
-            if not os.path.exists('./vsdsiptool-v1.0.0'):
-                print(f"错误：目录 './vsdsiptool-v1.0.0' 不存在。")
+            if not os.path.exists('./vsdsiptool-v1.0.1'):
+                print(f"错误：目录 './vsdsiptool-v1.0.1' 不存在。")
                 sys.exit(1)
             print("* * * * * * * * * * * * * * * *")
             print("  请选择要执行的操作(1~3):")
@@ -198,7 +198,7 @@ class Control:
                     netmask = input("子网掩码：")
                     try:
                         current_dir = os.getcwd()
-                        os.chdir('./vsdsiptool-v1.0.0')
+                        os.chdir('./vsdsiptool-v1.0.1')
                         command = ['./vsdsiptool', 'ip', 'create', '-ip', ip, '-d', device]
                         if dns:
                             command.extend(['-dns', dns])
