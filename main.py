@@ -23,7 +23,7 @@ class argparse_operator:
 
     def main_usage(self, args):
         if args.version:
-            print(f'Version: v1.0.0')
+            print(f'Version: v1.0.1')
         else:
             obj = process_control.Control()
 
