@@ -178,7 +178,7 @@ class Control:
                     try:
                         # subprocess.run(['python3','-m','controller.vsdsiptool.main','bonding','create',bond_name,'-ip',ip,'-d',device1,device2,'-m',mode], check=True)
                         current_dir = os.getcwd()
-                        os.chdir('./vsdsiptool-v1.0.0')
+                        os.chdir('./vsdsiptool-v1.0.1')
                         result = subprocess.run(['./vsdsiptool','bonding','create',bond_name,'-ip',ip,'-d',device1,device2,'-m',mode], check=True)
                         os.chdir(current_dir)
                         log_data = f"'localhost' - './vsdsiptool bonding create {bond_name} -ip {ip} -d {device1} {device2} -m {mode}' - {result.stdout}"
