@@ -102,10 +102,10 @@ class Control:
         if user_input == 'y':
             try:
                 current_dir = os.getcwd()
-                if not os.path.exists('./vsdsinstaller-k-v1.0.2'):
-                    print(f"错误：目录 './vsdsinstaller-k-v1.0.2' 不存在。")
+                if not os.path.exists('./vsdsinstaller-k-v1.0.3'):
+                    print(f"错误：目录 './vsdsinstaller-k-v1.0.3' 不存在。")
                     sys.exit(1)
-                os.chdir('./vsdsinstaller-k-v1.0.2')
+                os.chdir('./vsdsinstaller-k-v1.0.3')
                 result = subprocess.run(['./vsdsinstaller-k', '-r'], check=True)
                 os.chdir(current_dir)
                 log_data = f"'localhost' - './vsdsinstaller-k -r' - {result.stdout}"
